@@ -5,8 +5,15 @@
 
 namespace vpt {
 
+struct OutputImage {
+  int width;
+  int height;
+  std::filesystem::path path;
+};
+
 struct Configuration {
   std::filesystem::path volume_path;
+  OutputImage output_image;
 };
 
 Configuration read_configuration(const std::filesystem::path& path);

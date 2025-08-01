@@ -1,3 +1,8 @@
 {
-  "volume_path": "scenes/fire.nvdb"
+  "volume_path": "scenes/fire.nvdb",
+  "output_image": {
+    "path": "output.png", 
+    "width": 512,
+    "height": 512
+  }
 }
