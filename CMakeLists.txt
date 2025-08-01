@@ -17,13 +17,25 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(glaze)
 
+FetchContent_Declare(
+    raylib
+    DOWNLOAD_EXTRACT_TIMESTAMP OFF
+    URL https://github.com/raysan5/raylib/archive/refs/tags/5.5.tar.gz
+    FIND_PACKAGE_ARGS
+)
+FetchContent_MakeAvailable(raylib)
+
+
 add_subdirectory (external)
+
+find_package (Eigen3 3.3 REQUIRED NO_MODULE)
 
 add_executable (${PROJECT_NAME}
   src/main.cpp
   src/vdb_grid_io.cpp
   src/configuration.cpp
+  src/image_io.cpp
 )
 target_include_directories (${PROJECT_NAME} PRIVATE include)
-target_link_libraries (${PROJECT_NAME} cimg nanovdb fmt::fmt glaze::glaze)
+target_link_libraries (${PROJECT_NAME} nanovdb fmt::fmt glaze::glaze Eigen3::Eigen raylib rpng)
 target_compile_features (${PROJECT_NAME} PRIVATE cxx_std_23)
