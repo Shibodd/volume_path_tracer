@@ -65,7 +65,7 @@ private:
     wave_index_t requested_waves;
     wave_index_t max_wave_idx;
 
-    wave_start_monitor(wave_index_t requested_waves)
+    explicit wave_start_monitor(wave_index_t requested_waves)
       : requested_waves(requested_waves),
         max_wave_idx(0) 
     {}
