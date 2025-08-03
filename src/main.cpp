@@ -12,9 +12,9 @@ int main() {
   vpt::VolumeGrids vol = vpt::VolumeGrids::read_from_file(cfg.volume_path);
 
   vpt::Image<unsigned char, 3> img(cfg.output_image.width, cfg.output_image.height);
-  img.data().fill(decltype(img)::value_type(50, 50, 50));
+  img.data().fill(decltype(img)::value_t(50, 50, 50));
 
-  img.data()(50,0) = decltype(img)::value_type(100, 150, 200);
+  img.data()(50,0) = decltype(img)::value_t(100, 150, 200);
 
   InitWindow(cfg.output_image.width, cfg.output_image.height, "raylib [core] example - basic window");
   SetTargetFPS(30);
@@ -37,7 +37,7 @@ int main() {
         size_t x = std::min<size_t>(pos.x, img.data().cols());
         size_t y = std::min<size_t>(pos.y, img.data().rows());
 
-        img.data()(x, y) = decltype(img)::value_type::Ones() * 255;
+        img.data()(y, x) = decltype(img)::value_t::Ones() * 255;
       }
     }
     
