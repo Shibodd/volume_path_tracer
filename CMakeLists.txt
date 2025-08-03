@@ -4,12 +4,6 @@ project (vpt)
 include(FetchContent)
 
 FetchContent_Declare(
-  fmt
-  GIT_REPOSITORY https://github.com/fmtlib/fmt
-  GIT_TAG        40626af88bd7df9a5fb80be7b25ac85b122d6c21)
-FetchContent_MakeAvailable(fmt)
-
-FetchContent_Declare(
   glaze
   GIT_REPOSITORY https://github.com/stephenberry/glaze.git
   GIT_TAG main
@@ -25,7 +19,6 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(raylib)
 
-
 add_subdirectory (external)
 
 find_package (Eigen3 3.3 REQUIRED NO_MODULE)
@@ -36,6 +29,8 @@ add_executable (${PROJECT_NAME}
   src/configuration.cpp
   src/image_io.cpp
 )
+
 target_include_directories (${PROJECT_NAME} PRIVATE include)
-target_link_libraries (${PROJECT_NAME} nanovdb fmt::fmt glaze::glaze Eigen3::Eigen raylib rpng)
+target_compile_options (${PROJECT_NAME} PRIVATE -Wall -Wpedantic -Werror)
+target_link_libraries (${PROJECT_NAME} nanovdb glaze::glaze Eigen3::Eigen raylib rpng)
 target_compile_features (${PROJECT_NAME} PRIVATE cxx_std_23)

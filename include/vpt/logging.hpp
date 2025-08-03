@@ -1,28 +1,15 @@
 #ifndef VPT_LOGGING_HPP
 #define VPT_LOGGING_HPP
 
-#include <fmt/core.h>
+#include <source_location>
+#include <iostream>
 
-namespace vpt {
-namespace logging {
+#define vptFATAL(x) do { std::clog << "[FATAL]: " << x << "\n"; exit(1); } while(false)
+#define vptWARN(x) do { std::clog << "[WARN]: " << x << "\n"; } while(false)
+#define vptINFO(x) do { std::clog << "[INFO]: " << x << "\n"; } while(false)
+#define vptDEBUG(x) do { \
+  auto loc = std::source_location::current; \
+  std::clog << "[DBG] (" << loc.file_name() << '(' << loc.line() << ':' << loc.column() << ") `" << loc.function_name() << "`" << "): " << x << std::endl; \
+} while(false)
 
-template <typename ...Args>
-inline void fatal_error(fmt::format_string<Args...> format, Args&& ...args) { 
-  fmt::println("[FATAL] {}", fmt::format(format, std::forward<Args>(args)...));
-  exit(1);
-}
-
-template <typename ...Args>
-inline void warn(fmt::format_string<Args...> format, Args&& ...args) { 
-  fmt::println("[WARNING] {}", fmt::format(format, std::forward<Args>(args)...));
-}
-
-template <typename ...Args>
-inline void info(fmt::format_string<Args...> format, Args&& ...args) { 
-  fmt::println("[INFO] {}", fmt::format(format, std::forward<Args>(args)...));
-}
-
-} // namespace logging
-} // namespace vpt
-
-#endif // !VOLUMEPATHTRACER_LOGGING_HPP
+#endif // !VPT_LOGGING_HPP

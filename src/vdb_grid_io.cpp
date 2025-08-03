@@ -12,15 +12,16 @@ static inline VolumeGrids::GridHandleT nanovdb_read_grid_or_die(const std::files
     try {
       return nanovdb::io::readGrid<VolumeGrids::GridHandleT::BufferType>(path, grid_name);
     } catch (const std::runtime_error& e) {
-      logging::fatal_error("NanoVDB failed to read grid \"{}\" from file \"{}\": {}", grid_name, path.c_str(), e.what());
+      vptFATAL("NanoVDB failed to read grid \"" << grid_name << "\" from file \"" << path << "\": " << e.what());
     }
     std::unreachable();
   };
 
   auto grid = try_read(path, grid_name);
   
-  if (not grid)
-    logging::fatal_error("NanoVDB file {} does not contain the \"{}\" grid.", path.c_str(), grid_name);
+  if (not grid) {
+    vptFATAL("NanoVDB file " << path << " does not contain the \"" << grid_name << "\" grid.");
+  }
 
   return grid;
 }

@@ -19,14 +19,14 @@ bool save_image(const std::filesystem::path& path, const char* data, int width, 
   ); 
 
   if (buffer == NULL || sz == 0) {
-    logging::warn("Failed to serialize {}x{}, {}-bit {}-channel image to PNG!", width, height, color_channels, bit_depth);
+    vptWARN("Failed to serialize " << width << "x" << height << " " << bit_depth << "-bit " << color_channels << "-channel image to PNG!");
     return false;
   }
 
   std::ofstream out(path);
 
   if (!out.is_open()) {
-    logging::warn("Failed to open the output file \"{}\"!", path.c_str());
+    vptWARN("Failed to open the output file \"" << path << "\"!");
     return false;
   }
 
@@ -35,7 +35,7 @@ bool save_image(const std::filesystem::path& path, const char* data, int width, 
   out.close();
   
   if (out.fail()) {
-    logging::warn("Failed to write {} bytes to the output file!", sz);
+    vptWARN("Failed to write " << sz << " bytes to the output file!");
     return false;
   }
 

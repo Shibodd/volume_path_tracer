@@ -15,7 +15,7 @@ Configuration read_configuration(const std::filesystem::path& path) {
   }>(ans, "configuration.json", buf);
 
   if (err) {
-    logging::fatal_error("Failed to read configuration file {}: {}", path.c_str(), glz::format_error(err, buf));
+    vptFATAL("Failed to read configuration file \"" << path << "\": " << glz::format_error(err, buf));
   }
 
   return ans;
