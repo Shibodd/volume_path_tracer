@@ -25,31 +25,32 @@ namespace detail {
 using image_index_t = Eigen::Index;
 using image_point_t = Eigen::Vector2<image_index_t>;
 
-struct image_size_t {
-  image_index_t width;
-  image_index_t height;
-};
+using image_size_t = image_point_t;
 
 struct image_rect_t {
   image_point_t start;
   image_size_t size;
+
+  friend std::ostream& operator<<(std::ostream& os, const image_rect_t& rect) {
+    return os << rect.size.x() << 'x' << rect.size.y() << " @ (" << rect.start.x() << ',' << rect.start.y() << ')';
+  }
 };
 
 template <typename T, size_t N_channels>
 struct Image {
   using value_t = Eigen::Vector<T, N_channels>;
   
-  Image(size_t width, size_t height) { m_data.resize(height, width); }
+  Image(image_size_t size) { m_data.resize(size.y(), size.x()); }
 
   inline image_size_t size() const { return { m_data.cols(), m_data.rows() }; }
 
   inline auto data()       { return decltype(m_data)::Map(m_data.data(), m_data.rows(), m_data.cols()); }
   inline auto data() const { return decltype(m_data)::Map(m_data.data(), m_data.rows(), m_data.cols()); }
 
-  inline auto view(const image_rect_t& r) { return data().block(r.start.y(), r.start.x(), r.size.height, r.size.width); }
+  inline auto view(const image_rect_t& r) { return data().block(r.start.y(), r.start.x(), r.size.y(), r.size.x()); }
 
   std::enable_if_t<detail::supports_save_v<T>, bool> save(const std::filesystem::path& path) {
-    return detail::save_image(path, reinterpret_cast<char*>(m_data.data()->data()), size().width, size().height, N_channels, 8 * sizeof(T));
+    return detail::save_image(path, reinterpret_cast<char*>(m_data.data()->data()), size().x(), size().y(), N_channels, 8 * sizeof(T));
   }
 
 private:
