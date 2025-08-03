@@ -4,6 +4,7 @@
 #include <fmt/core.h>
 
 namespace vpt {
+namespace logging {
 
 template <typename ...Args>
 inline void fatal_error(fmt::format_string<Args...> format, Args&& ...args) { 
@@ -16,6 +17,12 @@ inline void warn(fmt::format_string<Args...> format, Args&& ...args) {
   fmt::println("[WARNING] {}", fmt::format(format, std::forward<Args>(args)...));
 }
 
+template <typename ...Args>
+inline void info(fmt::format_string<Args...> format, Args&& ...args) { 
+  fmt::println("[INFO] {}", fmt::format(format, std::forward<Args>(args)...));
+}
+
+} // namespace logging
 } // namespace vpt
 
 #endif // !VOLUMEPATHTRACER_LOGGING_HPP
