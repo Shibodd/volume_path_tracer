@@ -28,6 +28,7 @@ add_executable (${PROJECT_NAME}
   src/vdb_grid_io.cpp
   src/configuration.cpp
   src/image_io.cpp
+  src/tile_provider.cpp
 )
 
 target_include_directories (${PROJECT_NAME} PRIVATE include)
