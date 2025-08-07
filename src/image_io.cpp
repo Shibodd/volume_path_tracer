@@ -1,6 +1,6 @@
 #include <fstream>
 
-#include <rpng/rpng.h>
+#include <spng.h>
 
 #include <vpt/logging.hpp>
 #include <vpt/image.hpp>
@@ -8,36 +8,50 @@
 namespace vpt {
 namespace detail {
 
-struct RpngDeleter {
-  void operator()(char* ptr) { RPNG_FREE(ptr); }
+
+struct SpngCtxDeleter {
+  void operator()(spng_ctx* ptr) {
+    spng_ctx_free(ptr);
+  }
 };
 
-bool save_image(const std::filesystem::path& path, const char* data, int width, int height, int color_channels, int bit_depth) {
-  int sz = 0;
-  std::unique_ptr<char, RpngDeleter> buffer(
-    rpng_save_image_to_memory(data, width, height, color_channels, bit_depth, &sz)
-  ); 
+bool save_image(const std::filesystem::path& path, const char* data, int width, int height, int byte_depth) {
+  std::unique_ptr<spng_ctx, SpngCtxDeleter> ctx(spng_ctx_new(SPNG_CTX_ENCODER));
 
-  if (buffer == NULL || sz == 0) {
-    vptWARN("Failed to serialize " << width << "x" << height << " " << bit_depth << "-bit " << color_channels << "-channel image to PNG!");
+  if (ctx == NULL) {
+    vptWARN("Failed to create SPNG context!");
     return false;
   }
 
-  std::ofstream out(path);
+  struct spng_ihdr ihdr = { 0 };
+  ihdr.width = width;
+  ihdr.height = height;
+  ihdr.color_type = SPNG_COLOR_TYPE_TRUECOLOR;
+  ihdr.bit_depth = byte_depth * 8;
 
-  if (!out.is_open()) {
-    vptWARN("Failed to open the output file \"" << path << "\"!");
+  FILE* file = fopen(path.c_str(), "wb");
+  if (file == nullptr) {
+    vptWARN("Failed to open PNG output file \"" << path << "\"");
     return false;
   }
 
-  out.write(buffer.get(), sz);
 
-  out.close();
-  
-  if (out.fail()) {
-    vptWARN("Failed to write " << sz << " bytes to the output file!");
+  int ec;
+
+  if ((ec = spng_set_ihdr(ctx.get(), &ihdr)) != 0) {
+    vptFATAL("spng_set_ihdr errored with errno " << ec << ": " << spng_strerror(ec));
     return false;
   }
+  if ((ec = spng_set_png_file(ctx.get(), file)) != 0) {
+    vptFATAL("spng_set_png_file errored with errno " << ec << ": " << spng_strerror(ec));
+    return false;
+  }
+  if ((ec = spng_encode_image(ctx.get(), data, width * height * 3 * byte_depth, SPNG_FMT_PNG, SPNG_ENCODE_FINALIZE)) != 0) {
+    vptWARN("Failed to encode PNG (errno " << ec << "): " << spng_strerror(ec));
+    return false;
+  }
+
+  fclose(file);
 
   return true;
 }

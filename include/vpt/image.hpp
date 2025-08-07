@@ -8,18 +8,19 @@
 namespace vpt {
 
 namespace detail {
-  template <typename T>
+  template <typename T, int N_channels>
   struct supports_save {
     constexpr static bool value = 
         std::is_integral_v<T>
         && std::is_unsigned_v<T>
-        && (sizeof(T) == 1 || sizeof(T) == 2);
+        && (sizeof(T) == 1 || sizeof(T) == 2)
+        && N_channels == 3;
   };
 
-  template <typename T>
-  inline constexpr bool supports_save_v = supports_save<T>::value;
+  template <typename T, int N_channels>
+  inline constexpr bool supports_save_v = supports_save<T, N_channels>::value;
 
-  bool save_image(const std::filesystem::path& path, const char* data, int width, int height, int color_channels, int bit_depth);
+  bool save_image(const std::filesystem::path& path, const char* data, int width, int height, int byte_depth);
 }
 
 using image_index_t = Eigen::Index;
@@ -49,8 +50,9 @@ struct Image {
 
   inline auto view(const image_rect_t& r) { return data().block(r.start.y(), r.start.x(), r.size.y(), r.size.x()); }
 
-  std::enable_if_t<detail::supports_save_v<T>, bool> save(const std::filesystem::path& path) {
-    return detail::save_image(path, reinterpret_cast<char*>(m_data.data()->data()), size().x(), size().y(), N_channels, 8 * sizeof(T));
+  template <typename Dummy = bool>
+  std::enable_if_t<detail::supports_save_v<T, N_channels>, Dummy> save(const std::filesystem::path& path) {
+    return detail::save_image(path, reinterpret_cast<char*>(m_data.data()->data()), size().x(), size().y(), sizeof(T));
   }
 
 private:
