@@ -13,6 +13,7 @@ static inline T ceildiv(T x, T y) {
 
 TileProvider::TileProvider(const image_size_t& img_size, wave_index_t waves, const image_size_t& tile_size)
   : m_wave_start_monitor(waves),
+    m_force_stop(false),
     m_img_size(img_size),
     m_tile_size(tile_size),
     m_num_tiles(
