@@ -32,5 +32,6 @@ add_executable (${PROJECT_NAME}
 )
 
 target_include_directories (${PROJECT_NAME} PRIVATE include)
-target_link_libraries (${PROJECT_NAME} nanovdb glaze::glaze Eigen3::Eigen raylib spng)
+target_compile_options (${PROJECT_NAME} PRIVATE -Wall -Wpedantic -Werror)
+target_link_libraries (${PROJECT_NAME} nanovdb glaze::glaze Eigen3::Eigen raylib spng pcg-cpp)
 target_compile_features (${PROJECT_NAME} PRIVATE cxx_std_23)
