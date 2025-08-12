@@ -26,8 +26,10 @@ struct Camera {
 
   const CameraParameters& params() const { return m_params; }
   const Eigen::Affine3f& raster_to_world_dir() const { return m_raster_to_world_dir; }
+  const Eigen::Affine3f& screen_to_world_dir() const { return m_screen_to_world_dir; }
 private:
   CameraParameters m_params;
+  Eigen::Affine3f m_screen_to_world_dir;
   Eigen::Affine3f m_raster_to_world_dir;
 };
 

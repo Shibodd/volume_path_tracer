@@ -52,7 +52,8 @@ Camera::Camera(const CameraParameters& p, const image_size_t& im_sz)
   auto s2c = screen_to_camera(vfov_rad, ar);
   auto r2s = raster_to_screen(im_sz);
 
-  m_raster_to_world_dir = c2w.linear() * s2c * r2s;
+  m_screen_to_world_dir = c2w.linear() * s2c;
+  m_raster_to_world_dir = m_screen_to_world_dir * r2s;
 }
 
 } // namespace vpt
