@@ -12,12 +12,21 @@ struct OutputImage {
   std::filesystem::path path;
 };
 
+struct CameraParameters {
+  Eigen::Vector3f position;
+  Eigen::Vector3f look;
+  Eigen::Vector3f up;
+
+  float vfov_deg;
+};
+
 struct Configuration {
   std::filesystem::path volume_path;
   OutputImage output_image;
   image_size_t tile_size;
   unsigned int num_waves;
   unsigned int num_workers;
+  CameraParameters camera_parameters;
 };
 
 Configuration read_configuration(const std::filesystem::path& path);
