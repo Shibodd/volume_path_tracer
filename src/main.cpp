@@ -3,13 +3,13 @@
 #include <vpt/image.hpp>
 #include <vpt/worker.hpp>
 
-#include <random>
-
 #include <vpt/logging.hpp>
 
 #include <raylib.h>
 
+
 int main() {
+
   vpt::Configuration cfg = vpt::read_configuration("configuration.json");
 
   vpt::VolumeGrids vol = vpt::VolumeGrids::read_from_file(cfg.volume_path);
@@ -18,29 +18,17 @@ int main() {
 
   std::vector<std::jthread> threads;
 
-  vpt::Image<unsigned char, 3> img(cfg.output_image.size);
-  img.data().fill(decltype(img)::value_t(0, 0, 0));
+  vpt::Image<float, 3> film(cfg.output_image.size);
+  film.data().fill(decltype(film)::value_t::Zero());
 
-  
+  vpt::Image<unsigned char, 3> img(cfg.output_image.size);
+
+  vpt::Camera camera(cfg.camera_parameters, cfg.output_image.size);
 
   for (int i = 0; i < cfg.num_workers; ++i) {
     threads.emplace_back([&]() {
-      std::mt19937 gen(101 + i);
-      std::normal_distribution<> dis(0.0, 5);
-
-      while (auto handle = provider.next()) {
-        std::this_thread::sleep_for(std::chrono::duration<double>(std::abs(dis(gen))));
-
-        vpt::image_rect_t rect = handle.compute_rect();
-
-        img
-          .data()
-          .block(rect.start.y(), rect.start.x(), rect.size.y(), rect.size.x())
-          .array() += decltype(img)::value_t(50, 50, 50);
-
-        vptINFO(std::this_thread::get_id() << ": " << rect);
-      }
-
+      vpt::RandomNumberGenerator rng(10);
+      vpt::run(camera, provider, film, rng);
       vptINFO(std::this_thread::get_id() << " IS DONE!");
     });
   }
@@ -58,20 +46,16 @@ int main() {
   Texture2D texture = LoadTextureFromImage(image);
 
   while (!WindowShouldClose())    // Detect window close button or ESC key
-  {
-    if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
-      auto pos = GetMousePosition();
-
-      if (pos.x >= 0 && pos.y >= 0 && pos.x < img.data().cols() && pos.y < img.data().rows()) {
-        size_t x = std::min<size_t>(pos.x, img.data().cols());
-        size_t y = std::min<size_t>(pos.y, img.data().rows());
-
-        img.data()(y, x) = decltype(img)::value_t::Ones() * 255;
-      }
-    }
-    
+  { 
     BeginDrawing();
         ClearBackground(RAYWHITE);
+        
+        for (Eigen::Index i = 0; i < img.data().rows(); ++i) {
+          for (Eigen::Index j = 0; j < img.data().cols(); ++j) {
+            img.data()(i,j) = (film.data()(i,j) * 255.0f).cast<unsigned char>();
+          } 
+        }
+
         UpdateTexture(texture, img.data().data());
 
         DrawTexture(texture, 0, 0, WHITE);
@@ -80,6 +64,11 @@ int main() {
   }
 
   UnloadTexture(texture);
+  for (Eigen::Index i = 0; i < img.data().rows(); ++i) {
+    for (Eigen::Index j = 0; j < img.data().cols(); ++j) {
+      img.data()(i,j) = (film.data()(i,j) * 255.0f).cast<unsigned char>();
+    } 
+  }
   img.save(cfg.output_image.path.c_str());
 
   return 0;

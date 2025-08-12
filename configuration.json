@@ -4,7 +4,13 @@
     "path": "output.png", 
     "size": [1280, 720]
   },
-  "tile_size": [500, 500],
-  "num_waves": 5,
-  "num_workers": 4
+  "tile_size": [200, 200],
+  "num_waves": 1,
+  "num_workers": 8,
+  "camera_parameters": {
+    "position": [ 0.0, 0.0, 0.0 ],
+    "look": [ 1.0, 0.0, 0.0 ],
+    "up": [ 0.0, 0.0, 1.0 ],
+    "vfov_deg": 30
+  }
 }

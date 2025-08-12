@@ -29,6 +29,9 @@ add_executable (${PROJECT_NAME}
   src/configuration.cpp
   src/image_io.cpp
   src/tile_provider.cpp
+  src/camera.cpp
+  src/ray.cpp
+  src/worker.cpp
 )
 
 target_include_directories (${PROJECT_NAME} PRIVATE include)
