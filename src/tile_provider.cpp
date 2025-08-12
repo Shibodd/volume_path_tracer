@@ -83,10 +83,11 @@ bool TileProvider::wave_should_be_processed(wave_index_t idx) {
     return false;
   }
 
-  vptINFO("Starting wave " << idx);
-
   // Register the fact that this wave started.
   m_wave_start_monitor.max_wave_idx = idx;
+
+  lock.unlock();
+  vptINFO("Starting wave " << idx);
 
   return true;
 }
