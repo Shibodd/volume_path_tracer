@@ -32,6 +32,7 @@ add_executable (${PROJECT_NAME}
   src/camera.cpp
   src/ray.cpp
   src/worker.cpp
+  src/spectral.cpp
 )
 
 target_include_directories (${PROJECT_NAME} PRIVATE include)
