@@ -56,7 +56,7 @@ static inline uint64_t hash(uint64_t seed, Args... args) {
     data += sizeof(arg);
   }(args), ...);
 
-  return MurmurHash64A_padded(key, size, seed);
+  return detail::MurmurHash64A_padded(key, size, seed);
 }
 
 } // namespace vpt
