@@ -3,13 +3,13 @@
 namespace vpt {
 
 float Ray::intersect_sphere(const Eigen::Vector3f& center, float r) {
-  const float& dx = direction.x();
-  const float& dy = direction.y();
-  const float& dz = direction.z();
+  const float& dx = direction().x();
+  const float& dy = direction().y();
+  const float& dz = direction().z();
 
-  const float& x0 = origin.x();
-  const float& y0 = origin.y();
-  const float& z0 = origin.z();
+  const float& x0 = origin().x();
+  const float& y0 = origin().y();
+  const float& z0 = origin().z();
 
   const float& cx = center.x();
   const float& cy = center.y();
