@@ -2,7 +2,7 @@
   "volume_path": "scenes/fire.nvdb",
   "output_image": {
     "path": "output.png", 
-    "size": [1280, 720]
+    "size": [1920, 1080]
   },
   "tile_size": [200, 200],
   "num_waves": 1,
@@ -12,11 +12,12 @@
     "look": [ 1.0, 0.0, 0.0 ],
     "up": [ 0.0, 0.0, 1.0 ],
     "vfov_deg": 50,
-    "imaging_ratio": 4e-16
+    "imaging_ratio": 2e-8
   },
   "demo_parameters": {
-    "sphere_position": [15.0, 10.0, 1.0],
-    "sphere_radius": 1.0,
-    "sphere_temperature": 35000
+    "num_stars": 10000,
+    "distance_gauss": [17, 10],
+    "radius_gauss": [0.01, 0.005],
+    "temperature_gauss": [6000, 2000]
   }
 }

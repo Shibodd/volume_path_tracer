@@ -30,9 +30,11 @@ struct Configuration {
   CameraParameters camera_parameters;
 
   struct DemoParameters {
-    Eigen::Vector3f sphere_position;
-    float sphere_radius;
-    float sphere_temperature;
+    Eigen::Vector2f distance_gauss;
+    Eigen::Vector2f radius_gauss;
+    Eigen::Vector2f temperature_gauss;
+
+    unsigned int num_stars;
   } demo_parameters;
 };
 

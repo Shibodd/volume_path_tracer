@@ -8,7 +8,13 @@
 
 namespace vpt {
 
-void run(const Configuration::DemoParameters& demo_cfg, const Camera& camera, TileProvider& tp, Image<float, 3>& m_film, RandomNumberGenerator rng);
+struct Star {
+  Eigen::Vector3f position;
+  float radius;
+  Eigen::Vector3f xyz;
+};
+
+void run(const std::vector<Star>& stars, const Camera& camera, TileProvider& tp, Image<float, 3>& m_film, RandomNumberGenerator rng);
 
 } // namespace vpt
 
