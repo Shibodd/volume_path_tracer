@@ -6,10 +6,21 @@
 #include <vpt/logging.hpp>
 
 #include <raylib.h>
+#include <vpt/color.hpp>
 
+void film_to_image(const vpt::Image<float, 3>& film, vpt::Image<unsigned char, 3>& image) {
+  for (Eigen::Index i = 0; i < image.data().rows(); ++i) {
+    for (Eigen::Index j = 0; j < image.data().cols(); ++j) {
+      Eigen::Vector3f xyz = film.data()(i,j);
+      Eigen::Vector3f linsrgb = vpt::xyz_to_linsrgb(xyz);
+      Eigen::Vector3f srgb = vpt::linsrgb_to_srgb(linsrgb);
+
+      image.data()(i,j) = (srgb.cwiseMax(0.0f).cwiseMin(1.0f) * 255.0f).cast<unsigned char>();
+    } 
+  }
+}
 
 int main() {
-
   vpt::Configuration cfg = vpt::read_configuration("configuration.json");
 
   vpt::VolumeGrids vol = vpt::VolumeGrids::read_from_file(cfg.volume_path);
@@ -28,7 +39,7 @@ int main() {
   for (int i = 0; i < cfg.num_workers; ++i) {
     threads.emplace_back([&]() {
       vpt::RandomNumberGenerator rng(10);
-      vpt::run(camera, provider, film, rng);
+      vpt::run(cfg.demo_parameters, camera, provider, film, rng);
       vptINFO(std::this_thread::get_id() << " IS DONE!");
     });
   }
@@ -50,11 +61,7 @@ int main() {
     BeginDrawing();
         ClearBackground(RAYWHITE);
         
-        for (Eigen::Index i = 0; i < img.data().rows(); ++i) {
-          for (Eigen::Index j = 0; j < img.data().cols(); ++j) {
-            img.data()(i,j) = (film.data()(i,j) * 255.0f).cast<unsigned char>();
-          } 
-        }
+        film_to_image(film, img);
 
         UpdateTexture(texture, img.data().data());
 
@@ -64,11 +71,8 @@ int main() {
   }
 
   UnloadTexture(texture);
-  for (Eigen::Index i = 0; i < img.data().rows(); ++i) {
-    for (Eigen::Index j = 0; j < img.data().cols(); ++j) {
-      img.data()(i,j) = (film.data()(i,j) * 255.0f).cast<unsigned char>();
-    } 
-  }
+  
+  film_to_image(film, img);
   img.save(cfg.output_image.path.c_str());
 
   return 0;

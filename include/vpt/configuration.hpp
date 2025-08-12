@@ -18,6 +18,7 @@ struct CameraParameters {
   Eigen::Vector3f up;
 
   float vfov_deg;
+  float imaging_ratio;
 };
 
 struct Configuration {
@@ -27,6 +28,12 @@ struct Configuration {
   unsigned int num_waves;
   unsigned int num_workers;
   CameraParameters camera_parameters;
+
+  struct DemoParameters {
+    Eigen::Vector3f sphere_position;
+    float sphere_radius;
+    float sphere_temperature;
+  } demo_parameters;
 };
 
 Configuration read_configuration(const std::filesystem::path& path);

@@ -11,6 +11,12 @@
     "position": [ 0.0, 0.0, 0.0 ],
     "look": [ 1.0, 0.0, 0.0 ],
     "up": [ 0.0, 0.0, 1.0 ],
-    "vfov_deg": 30
+    "vfov_deg": 50,
+    "imaging_ratio": 4e-16
+  },
+  "demo_parameters": {
+    "sphere_position": [15.0, 10.0, 1.0],
+    "sphere_radius": 1.0,
+    "sphere_temperature": 35000
   }
 }
