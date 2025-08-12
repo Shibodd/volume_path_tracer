@@ -15,6 +15,8 @@ struct TileProvider {
   struct token {
     image_rect_t compute_rect() { return m_tp.compute_tile_rect(m_idx); }
     bool valid() const { return m_idx != INVALID_IDX; }
+    size_t wave() const { return m_wave_idx; }
+    size_t jid() const { return m_jid; }
     operator bool() const { return valid(); }
 
     ~token() {
@@ -36,16 +38,17 @@ struct TileProvider {
     friend TileProvider;
 
     static token invalid(TileProvider& tp) {
-      return token { tp, INVALID_IDX, 0 };
+      return token { tp, INVALID_IDX, 0, 0 };
     }
 
-    token(TileProvider& tp, unsigned int idx, wave_index_t wave_idx)
-      : m_idx(idx), m_tp(tp), m_wave_idx(wave_idx)
+    token(TileProvider& tp, unsigned int idx, wave_index_t wave_idx, size_t jid)
+      : m_idx(idx), m_tp(tp), m_wave_idx(wave_idx), m_jid(jid)
     { }
 
     tile_index_t m_idx;
     TileProvider& m_tp;
     wave_index_t m_wave_idx;
+    size_t m_jid;
   };
 
   friend token;

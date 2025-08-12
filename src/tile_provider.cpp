@@ -63,7 +63,7 @@ TileProvider::token TileProvider::next() {
     return token::invalid(*this);
   }
 
-  return token(*this, tile_idx, wave_idx);
+  return token(*this, tile_idx, wave_idx, job_idx);
 }
 
 bool TileProvider::wave_should_be_processed(wave_index_t idx) {
