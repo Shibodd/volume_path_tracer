@@ -8,13 +8,7 @@
 
 namespace vpt {
 
-struct Star {
-  Eigen::Vector3f position;
-  float radius;
-  Eigen::Vector3f xyz;
-};
-
-void run(const std::vector<Star>& stars, const Camera& camera, TileProvider& tp, Image<float, 4>& m_film, RandomNumberGenerator rng);
+void run(const Camera& camera, TileProvider& tp, Image<float, 4>& m_film, RandomNumberGenerator rng);
 
 } // namespace vpt
 

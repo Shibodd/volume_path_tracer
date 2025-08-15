@@ -42,33 +42,10 @@ int main() {
 
   vpt::Camera camera(cfg.camera_parameters, cfg.output_image.size);
 
-  std::vector<vpt::Star> stars;
-  stars.reserve(cfg.demo_parameters.num_stars);
-
-  std::mt19937 gen(0);
-
-  for (size_t i = 0; i < cfg.demo_parameters.num_stars; ++i) {
-
-    Eigen::Vector2f screen2 = Eigen::Vector2f::Random();
-    Eigen::Vector3f screen = Eigen::Vector3f { screen2.x(), screen2.y(), 0.0f };
-  
-    Eigen::Vector3f dir = (camera.screen_to_world_dir() * screen).normalized();
-
-    float distance = 4.0f + std::clamp<float>(std::normal_distribution<float>(cfg.demo_parameters.distance_gauss.x(), cfg.demo_parameters.distance_gauss.y())(gen), 2.0f, 1000.0f);
-    float radius = std::clamp<float>(std::normal_distribution<float>(cfg.demo_parameters.radius_gauss.x(), cfg.demo_parameters.radius_gauss.y())(gen), 0.001f, 0.03f);
-    float temperature = std::clamp<float>(std::normal_distribution<float>(cfg.demo_parameters.temperature_gauss.x(), cfg.demo_parameters.temperature_gauss.y())(gen), 3000.0f, 40000.0f);
-
-    stars.emplace_back(
-      cfg.camera_parameters.position + dir * distance,
-      radius,
-      vpt::spectrum_to_xyz(vpt::BlackbodyEmittedRadianceSpectrum(temperature))
-    );
-  }
-
   for (int i = 0; i < cfg.num_workers; ++i) {
     threads.emplace_back([&]() {
       vpt::RandomNumberGenerator rng(10);
-      vpt::run(stars, camera, provider, film, rng);
+      vpt::run(camera, provider, film, rng);
       vptINFO(std::this_thread::get_id() << " IS DONE!");
     });
   }

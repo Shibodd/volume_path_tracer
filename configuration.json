@@ -13,11 +13,5 @@
     "up": [ 0.0, 0.0, 1.0 ],
     "vfov_deg": 50,
     "imaging_ratio": 2e-8
-  },
-  "demo_parameters": {
-    "num_stars": 10000,
-    "distance_gauss": [17, 10],
-    "radius_gauss": [0.01, 0.005],
-    "temperature_gauss": [6000, 2000]
   }
 }

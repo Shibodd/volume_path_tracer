@@ -28,14 +28,6 @@ struct Configuration {
   unsigned int num_waves;
   unsigned int num_workers;
   CameraParameters camera_parameters;
-
-  struct DemoParameters {
-    Eigen::Vector2f distance_gauss;
-    Eigen::Vector2f radius_gauss;
-    Eigen::Vector2f temperature_gauss;
-
-    unsigned int num_stars;
-  } demo_parameters;
 };
 
 Configuration read_configuration(const std::filesystem::path& path);
