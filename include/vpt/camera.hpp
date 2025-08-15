@@ -11,16 +11,14 @@ namespace vpt {
 struct Camera {
   Camera(const CameraParameters& p, const image_size_t& im_sz);
 
-  inline Ray generate_ray(const image_point_t& raster) const {
-    Eigen::Vector3f raster_coords {
-      raster.cast<float>().x() + 0.5f,
-      raster.cast<float>().y() + 0.5f,
-      0.0f
-    };
+  inline Ray generate_ray(const image_point_t& raster, const Eigen::Vector2f& jitter) const {
+    Eigen::Vector2f rasterf2 = raster.cast<float>() + Eigen::Vector2f { 0.5f, 0.5f } + jitter;
+
+    Eigen::Vector3f rasterf3 { rasterf2.x(), rasterf2.y(), 0.0f };
     
     return {
       params().position,
-      (m_raster_to_world_dir * raster_coords).normalized()
+      (m_raster_to_world_dir * rasterf3).normalized()
     };
   }
 

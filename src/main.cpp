@@ -11,10 +11,12 @@
 
 #include <random>
 
-void film_to_image(const vpt::Image<float, 3>& film, vpt::Image<unsigned char, 3>& image) {
+void film_to_image(const vpt::Image<float, 4>& film, vpt::Image<unsigned char, 3>& image) {
   for (Eigen::Index i = 0; i < image.data().rows(); ++i) {
     for (Eigen::Index j = 0; j < image.data().cols(); ++j) {
-      Eigen::Vector3f xyz = film.data()(i,j);
+      Eigen::Vector4f xyzw = film.data()(i,j);
+      Eigen::Vector3f xyz = xyzw.topRows<3>() / xyzw.w();
+
       Eigen::Vector3f linsrgb = vpt::xyz_to_linsrgb(xyz);
       Eigen::Vector3f srgb = vpt::linsrgb_to_srgb(linsrgb);
 
@@ -32,10 +34,11 @@ int main() {
 
   std::vector<std::jthread> threads;
 
-  vpt::Image<float, 3> film(cfg.output_image.size);
+  vpt::Image<float, 4> film(cfg.output_image.size);
   film.data().fill(decltype(film)::value_t::Zero());
 
   vpt::Image<unsigned char, 3> img(cfg.output_image.size);
+  img.data().fill(decltype(img)::value_t::Zero());
 
   vpt::Camera camera(cfg.camera_parameters, cfg.output_image.size);
 

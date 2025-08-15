@@ -3,7 +3,7 @@
 
 namespace vpt {
 
-void run(const std::vector<Star>& stars, const Camera& camera, TileProvider& tp, Image<float, 3>& m_film, RandomNumberGenerator rng) {
+void run(const std::vector<Star>& stars, const Camera& camera, TileProvider& tp, Image<float, 4>& m_film, RandomNumberGenerator rng) {
   while (auto tok = tp.next()) {
     image_rect_t rect = tok.compute_rect();
     
@@ -13,9 +13,13 @@ void run(const std::vector<Star>& stars, const Camera& camera, TileProvider& tp,
       for (image_index_t x = 0; x < rect.size.x(); ++x) {
         image_point_t pt = rect.start + image_point_t { x, y };
 
-        std::remove_reference_t<decltype(m_film)>::value_t sample { 0.0f, 0.0f, 0.0f };
+        Eigen::Vector3f sample { 0.0f, 0.0f, 0.0f };
+        float w = 1.0;
 
-        Ray r = camera.generate_ray(pt);
+        Eigen::Vector2f jitter { rng.uniform<float>(), rng.uniform<float>() };
+        jitter *= 0.5;
+        
+        Ray r = camera.generate_ray(pt, jitter);
 
         float t_min = std::numeric_limits<float>::infinity();
         const Star* star_hit = nullptr;
@@ -43,8 +47,8 @@ void run(const std::vector<Star>& stars, const Camera& camera, TileProvider& tp,
         // sample Li
         // match to XYZ
         // add to the film
-
-        m_film.data()(pt.y(), pt.x()) += camera.params().imaging_ratio * sample;
+        m_film.data()(pt.y(), pt.x()).topRows<3>() += camera.params().imaging_ratio * sample;
+        m_film.data()(pt.y(), pt.x()).w() += w;
       }
     }
   }
