@@ -25,7 +25,7 @@ find_package (Eigen3 3.3 REQUIRED NO_MODULE)
 
 add_executable (${PROJECT_NAME}
   src/main.cpp
-  src/vdb_grid_io.cpp
+  src/volume_grids.cpp
   src/configuration.cpp
   src/image_io.cpp
   src/tile_provider.cpp

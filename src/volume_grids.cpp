@@ -1,11 +1,34 @@
 #include <utility>
 
+// ffs... build your shit with warnings enabled pls
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#include <nanovdb/tools/CreatePrimitives.h>
+#pragma GCC diagnostic pop
+
 #include <nanovdb/io/IO.h>
+#include <nanovdb/tools/GridBuilder.h>
 
 #include <vpt/logging.hpp>
-#include <vpt/volume_grid.hpp>
+#include <vpt/volume_grids.hpp>
 
 namespace vpt {
+
+VolumeGrids::VolumeGrids(GridHandleT&& h_density, GridHandleT&& h_temperature)
+  : m_density_handle(std::forward<GridHandleT>(h_density)),
+    m_temperature_handle(std::forward<GridHandleT>(h_temperature)),
+    m_density(m_density_handle.grid<float>()),
+    m_temperature(m_temperature_handle.grid<float>())
+{}
+
+VolumeGrids VolumeGrids::generate_donut() {
+  nanovdb::tools::build::FloatGrid temperature_grid(0.0f); // cold-ass donut
+  
+  return VolumeGrids {
+    nanovdb::tools::createFogVolumeTorus(),
+    nanovdb::tools::createNanoGrid(temperature_grid)
+  };
+}
 
 static inline VolumeGrids::GridHandleT nanovdb_read_grid_or_die(const std::filesystem::path& path, const std::string& grid_name) {
   constexpr auto try_read = [](const std::filesystem::path& path, const std::string& grid_name) {
