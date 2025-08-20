@@ -45,7 +45,7 @@ int main() {
   for (int i = 0; i < cfg.num_workers; ++i) {
     threads.emplace_back([&]() {
       vpt::RandomNumberGenerator rng(10);
-      vpt::run(camera, provider, film, rng);
+      vpt::run(cfg.worker_parameters, camera, provider, film, rng);
       vptINFO(std::this_thread::get_id() << " IS DONE!");
     });
   }

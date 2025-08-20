@@ -8,7 +8,7 @@
 
 namespace vpt {
 
-void run(const Camera& camera, TileProvider& tp, Image<float, 4>& m_film, RandomNumberGenerator rng);
+void run(const WorkerParameters& params, const Camera& camera, TileProvider& tp, Image<float, 4>& m_film, RandomNumberGenerator rng);
 
 } // namespace vpt
 

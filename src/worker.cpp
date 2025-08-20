@@ -3,7 +3,7 @@
 
 namespace vpt {
 
-void run(const Camera& camera, TileProvider& tp, Image<float, 4>& m_film, RandomNumberGenerator rng) {
+void run(const WorkerParameters& params, const Camera& camera, TileProvider& tp, Image<float, 4>& m_film, RandomNumberGenerator rng) {
   while (auto tok = tp.next()) {
     image_rect_t rect = tok.compute_rect();
     
@@ -12,6 +12,12 @@ void run(const Camera& camera, TileProvider& tp, Image<float, 4>& m_film, Random
     for (image_index_t y = 0; y < rect.size.y(); ++y) {
       for (image_index_t x = 0; x < rect.size.x(); ++x) {
         image_point_t pt = rect.start + image_point_t { x, y };
+
+        if (params.single_pixel.enabled and params.single_pixel.coord != pt) {
+          continue;
+        }
+        
+        std::this_thread::sleep_for(std::chrono::seconds(1));
 
         Eigen::Vector3f sample { 0.0f, 0.0f, 0.0f };
         float w = 1.0;

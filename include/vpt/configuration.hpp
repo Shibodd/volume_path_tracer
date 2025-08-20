@@ -21,6 +21,13 @@ struct CameraParameters {
   float imaging_ratio;
 };
 
+struct WorkerParameters {
+  struct SinglePixelMode {
+    bool enabled;
+    image_point_t coord;
+  } single_pixel;
+};
+
 struct Configuration {
   std::filesystem::path volume_path;
   OutputImage output_image;
@@ -28,6 +35,7 @@ struct Configuration {
   unsigned int num_waves;
   unsigned int num_workers;
   CameraParameters camera_parameters;
+  WorkerParameters worker_parameters;
 };
 
 Configuration read_configuration(const std::filesystem::path& path);
