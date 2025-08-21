@@ -25,7 +25,7 @@ void run(const WorkerParameters& params, const Volume& vol, const Camera& camera
         float w = 1.0;
 
         Eigen::Vector2f jitter { rng.uniform<float>(), rng.uniform<float>() };
-        jitter *= params.single_pixel.enabled? 0.0 : 0.5;
+        jitter *= params.use_jitter? 0.5 : 0.0;
 
         Ray r = camera.generate_ray(pt, jitter);
         vol.log_dda_trace(r);

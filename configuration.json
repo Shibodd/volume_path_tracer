@@ -8,7 +8,7 @@
     "single_pixel": {
       "enabled": true,
       "coord": [200, 200]
-    }
+    "use_jitter": true
   },
   "tile_size": [200, 200],
   "num_waves": 1,

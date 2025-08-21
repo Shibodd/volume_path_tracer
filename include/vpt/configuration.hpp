@@ -26,6 +26,7 @@ struct WorkerParameters {
     bool enabled;
     image_point_t coord;
   } single_pixel;
+  bool use_jitter;
 };
 
 struct Configuration {
