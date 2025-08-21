@@ -21,15 +21,28 @@ void run(const WorkerParameters& params, const Volume& vol, const Camera& camera
           std::this_thread::sleep_for(std::chrono::seconds(1));
         }
         
-        Eigen::Vector3f sample { 0.0f, 0.0f, 0.0f };
+        Eigen::Vector3f sample = decltype(sample)::Zero();
         float w = 1.0;
 
         Eigen::Vector2f jitter { rng.uniform<float>(), rng.uniform<float>() };
         jitter *= params.use_jitter? 0.5 : 0.0;
 
         Ray r = camera.generate_ray(pt, jitter);
-        vol.log_dda_trace(r);
-        vol.log_majorant_trace(r);
+
+        // vol.log_dda_trace(r);
+        // vol.log_majorant_trace(r);
+        
+        if (auto intersection = vol.intersect(r)) {
+          float sum = 0.0f;
+
+          while (auto segment = intersection->next()) {
+            const RayMajorantIterator::Segment& seg = *segment;
+
+            sum += seg.majorant;
+          }
+
+          sample = Eigen::Vector3f::Ones() * std::clamp(1.0f / sum, 0.0f, 1.0f);
+        }
         
         // sample lambda
         // sample Li

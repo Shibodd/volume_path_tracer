@@ -2,22 +2,23 @@
   "volume_path": "scenes/fire.nvdb",
   "output_image": {
     "path": "output.png", 
-    "size": [401, 401]
+    "size": [500, 700]
   },
   "worker_parameters": {
     "single_pixel": {
-      "enabled": true,
-      "coord": [200, 200]
-    "use_jitter": true
+      "enabled": false,
+      "coord": [1308, 507]
+    },
+    "use_jitter": false
   },
   "tile_size": [200, 200],
   "num_waves": 1,
   "num_workers": 8,
   "camera_parameters": {
-    "position": [ -5000.0, 0.0, 0.0 ],
-    "look": [ 0.0, 0.0, 0.0 ],
-    "up": [ 0.0, 0.0, 1.0 ],
-    "vfov_deg": 40,
+    "position": [ 0.0, 25.0, 500.0 ],
+    "look": [ 0.0, 25.0, 0.0 ],
+    "up": [ 0.0, 1.0, 0.0 ],
+    "vfov_deg": 7,
     "imaging_ratio": 1
   }
 }
