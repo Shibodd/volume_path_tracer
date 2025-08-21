@@ -181,7 +181,7 @@ void Volume::log_majorant_trace(const Ray& ray) const {
   std::optional<RayMajorantIterator> intersection = intersect(ray);
 
   std::ofstream log("majorant_trace.csv");
-  print_csv(log, "X0", "X1", "T0", "T1", "Majorant") << '\n';
+  print_csv(log, "X0", "Y0", "Z0", "X1", "Y1", "Z1", "T0", "T1", "Majorant") << '\n';
 
   if (intersection) {
     RayMajorantIterator iter = *intersection;
