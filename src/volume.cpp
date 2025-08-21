@@ -171,10 +171,6 @@ Eigen::Vector3f Volume::world_to_density_index(const Eigen::Vector3f& world) con
 }
 
 void Volume::log_majorant_trace(const Ray& ray) const {
-  if (ray.direction().cwiseAbs() != Eigen::Vector3f(1.0f, 0.0f, 0.0f)) {
-    vptFATAL("For now this only supports ray in the +-X direction.");
-  }
-
   std::optional<RayMajorantIterator> intersection = intersect(ray);
 
   std::ofstream log("majorant_trace.csv");
@@ -187,16 +183,12 @@ void Volume::log_majorant_trace(const Ray& ray) const {
 
       Eigen::Vector3f p0 = world_to_density_index(ray.eval(segment.t0));
       Eigen::Vector3f p1 = world_to_density_index(ray.eval(segment.t1));
-      print_csv(log, p0.x(), p1.x(), segment.t0, segment.t1, segment.majorant) << '\n';
+      print_csv(log, p0.x(), p0.y(), p0.z(), p1.x(), p1.y(), p1.z(), segment.t0, segment.t1, segment.majorant) << '\n';
     }
   }
 }
 
 void Volume::log_dda_trace(const Ray& vpt_ray) const {
-  if (vpt_ray.direction().cwiseAbs() != Eigen::Vector3f(1.0f, 0.0f, 0.0f)) {
-    vptFATAL("For now this only supports ray in the +-X direction.");
-  }
-
   nanovdb::math::Ray<float> w_ray(eigen_to_nanovdb_f(vpt_ray.origin()), eigen_to_nanovdb_f(vpt_ray.direction()));
   w_ray.setMaxTime(10000.0f);
 
@@ -213,7 +205,7 @@ void Volume::log_dda_trace(const Ray& vpt_ray) const {
 
   std::ofstream out("dda_trace.csv");
 
-  print_csv(out, "X", "Y", "Z", "Value", "Dim_getdim", "Dim_nodeinfo", "Active", "Maximum") << "\n";
+  print_csv(out, "X", "Y", "Z", "T", "Value", "Dim_getdim", "Dim_nodeinfo", "Active", "Maximum") << "\n";
 
   nanovdb::math::DDA<decltype(ray), nanovdb::math::Coord> dda(ray);
   do {
@@ -227,7 +219,7 @@ void Volume::log_dda_trace(const Ray& vpt_ray) const {
 
     bool active = acc.isActive(ijk);
 
-    print_csv(out, ijk.x(), ijk.y(), ijk.z(), value, dim_getdim, dim_nodeinfo, active, max_value) << std::endl;
+    print_csv(out, ijk.x(), ijk.y(), ijk.z(), dda.time(), value, dim_getdim, dim_nodeinfo, active, max_value) << std::endl;
   } while (dda.step());
 }
 
