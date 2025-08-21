@@ -29,13 +29,21 @@ static inline Eigen::Vector3f nanovdb_to_eigen_f(const nanovdb::math::Vec3f& v) 
 }
 
 float RayMajorantIterator::get_current_majorant() {
-  auto ni = m_acc.getNodeInfo(m_hdda.voxel());
-  if (ni.dim == LEAF_DIM) {
+
+  auto ijk = m_ray(m_hdda.time()).floor();
+  
+  if (const auto* leaf = m_acc.probeLeaf(ijk)) {
     // This is a leaf. The majorant is stored in maximum.
-    return ni.maximum;
+    return leaf->getMax();
   } else { 
-    // Not a leaf, meaning that it has constant value across its range.
-    return m_acc.getValue(m_hdda.voxel());
+    // Not a leaf. It may still have a value which is constant value across its range.
+
+    float value;
+    if (m_acc.probeValue(ijk, value)) {
+      return value;
+    }
+    
+    return 0.0f;
   }
 }
 
@@ -66,8 +74,7 @@ std::optional<RayMajorantIterator::Segment> RayMajorantIterator::next() {
     }
 
     // Update the HDDA with the new step dimension.
-    nanovdb::Coord next_ijk = m_ray(m_hdda.time() + 1.0001f).floor();
-    uint32_t new_dim = get_hdda_dim(next_ijk, m_acc, m_ray);
+    uint32_t new_dim = get_hdda_dim(m_hdda.voxel(), m_acc, m_ray);
     m_hdda.update(m_ray, new_dim);
 
     // Try to compute the majorant after the step. If it is the same, we'll bundle the two segments together.
