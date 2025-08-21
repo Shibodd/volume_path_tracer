@@ -11,12 +11,6 @@
 
 namespace vpt {
 
-struct Volume {
-  Volume(const VolumeGrids& grids);
-private:
-  const VolumeGrids& m_grids;
-};
-
 struct RayMajorantIterator {
   using GridT = VolumeGrids::GridT;
   using RayT = nanovdb::math::Ray<float>;
@@ -31,16 +25,28 @@ struct RayMajorantIterator {
   };
 
   std::optional<Segment> next();
-
-  static std::optional<RayMajorantIterator> create_from_intersection(const vpt::Ray& ray, const GridT& density);
-
-private:
   RayMajorantIterator(const RayT& ray, const GridT& density);
 
+private:
+  float get_current_majorant();
+
+  float m_scale;
   RayT m_ray;
   GridT::AccessorType m_acc;
 
   nanovdb::math::HDDA<RayT> m_hdda;
+};
+
+struct Volume {
+  Volume(const VolumeGrids& grids);
+
+  void log_dda_trace(const Ray& vpt_ray) const;
+  void log_majorant_trace(const Ray& vpt_ray) const;
+
+  std::optional<RayMajorantIterator> intersect(const vpt::Ray& ray) const;
+  Eigen::Vector3f world_to_density_index(const Eigen::Vector3f& world) const;
+private:
+  const VolumeGrids& m_grids;
 };
 
 } // namespace vpt
