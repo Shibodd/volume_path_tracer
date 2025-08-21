@@ -44,7 +44,7 @@ int main() {
 
   vpt::Camera camera(cfg.camera_parameters, cfg.output_image.size);
 
-  for (int i = 0; i < cfg.num_workers; ++i) {
+  for (unsigned int i = 0; i < cfg.num_workers; ++i) {
     threads.emplace_back([&]() {
       vpt::RandomNumberGenerator rng(10);
       vpt::run(cfg.worker_parameters, vol, camera, provider, film, rng);

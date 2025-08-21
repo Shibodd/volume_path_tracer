@@ -23,7 +23,8 @@ bool save_image(const std::filesystem::path& path, const char* data, int width, 
     return false;
   }
 
-  struct spng_ihdr ihdr = { 0 };
+  struct spng_ihdr ihdr;
+  memset(&ihdr, 0, sizeof(spng_ihdr));
   ihdr.width = width;
   ihdr.height = height;
   ihdr.color_type = SPNG_COLOR_TYPE_TRUECOLOR;

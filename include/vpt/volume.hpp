@@ -3,8 +3,14 @@
 
 #include <optional>
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#pragma GCC diagnostic ignored "-Wdouble-promotion"
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wdeprecated-copy"
 #include <nanovdb/math/Ray.h>
 #include <nanovdb/math/HDDA.h>
+#pragma GCC diagnostic pop
 
 #include <vpt/volume_grids.hpp>
 #include <vpt/ray.hpp>

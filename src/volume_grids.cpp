@@ -4,11 +4,14 @@
 // ffs... build your shit with warnings enabled pls
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-but-set-variable"
+#pragma GCC diagnostic ignored "-Wdouble-promotion"
+#pragma GCC diagnostic ignored "-Wdeprecated-copy"
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 #include <nanovdb/tools/CreatePrimitives.h>
-#pragma GCC diagnostic pop
-
 #include <nanovdb/io/IO.h>
 #include <nanovdb/tools/GridBuilder.h>
+#pragma GCC diagnostic pop
+
 
 #include <vpt/logging.hpp>
 #include <vpt/volume_grids.hpp>

@@ -1,7 +1,11 @@
 #ifndef VPT_RANDOM_HPP
 #define VPT_RANDOM_HPP
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-but-set-parameter"
 #include <pcg/pcg_random.hpp>
+#pragma GCC diagnostic pop
+
 #include <vpt/hash.hpp>
 
 namespace vpt {

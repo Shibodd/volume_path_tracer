@@ -46,7 +46,7 @@ Camera::Camera(const CameraParameters& p, const image_size_t& im_sz)
   : m_params(p)
 {
   float ar = static_cast<float>(im_sz.x()) / static_cast<float>(im_sz.y());
-  float vfov_rad = std::numbers::pi * p.vfov_deg / 180.0f;
+  float vfov_rad = float(std::numbers::pi) * p.vfov_deg / 180.0f;
 
   auto c2w = camera_to_world(p.position, p.look, p.up);
   auto s2c = screen_to_camera(vfov_rad, ar);
