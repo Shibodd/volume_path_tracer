@@ -13,12 +13,14 @@ void run(const WorkerParameters& params, const Camera& camera, TileProvider& tp,
       for (image_index_t x = 0; x < rect.size.x(); ++x) {
         image_point_t pt = rect.start + image_point_t { x, y };
 
-        if (params.single_pixel.enabled and params.single_pixel.coord != pt) {
-          continue;
+        if (params.single_pixel.enabled) {
+          if (params.single_pixel.coord != pt) {
+            continue;
+          }
+
+          std::this_thread::sleep_for(std::chrono::seconds(1));
         }
         
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-
         Eigen::Vector3f sample { 0.0f, 0.0f, 0.0f };
         float w = 1.0;
 
