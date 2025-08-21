@@ -1,4 +1,4 @@
-#include <vpt/volume_grid.hpp>
+#include <vpt/volume.hpp>
 #include <vpt/configuration.hpp>
 #include <vpt/image.hpp>
 #include <vpt/worker.hpp>
@@ -28,7 +28,9 @@ void film_to_image(const vpt::Image<float, 4>& film, vpt::Image<unsigned char, 3
 int main() {
   vpt::Configuration cfg = vpt::read_configuration("configuration.json");
 
-  vpt::VolumeGrids vol = vpt::VolumeGrids::read_from_file(cfg.volume_path);
+  // vpt::VolumeGrids grids = vpt::VolumeGrids::generate_donut();
+  vpt::VolumeGrids grids = vpt::VolumeGrids::read_from_file(cfg.volume_path);
+  vpt::Volume vol(grids);
 
   vpt::TileProvider provider(cfg.output_image.size, cfg.num_waves, cfg.tile_size);
 
@@ -45,7 +47,7 @@ int main() {
   for (int i = 0; i < cfg.num_workers; ++i) {
     threads.emplace_back([&]() {
       vpt::RandomNumberGenerator rng(10);
-      vpt::run(cfg.worker_parameters, camera, provider, film, rng);
+      vpt::run(cfg.worker_parameters, vol, camera, provider, film, rng);
       vptINFO(std::this_thread::get_id() << " IS DONE!");
     });
   }

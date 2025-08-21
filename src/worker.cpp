@@ -3,7 +3,7 @@
 
 namespace vpt {
 
-void run(const WorkerParameters& params, const Camera& camera, TileProvider& tp, Image<float, 4>& m_film, RandomNumberGenerator rng) {
+void run(const WorkerParameters& params, const Volume& vol, const Camera& camera, TileProvider& tp, Image<float, 4>& m_film, RandomNumberGenerator rng) {
   while (auto tok = tp.next()) {
     image_rect_t rect = tok.compute_rect();
     
@@ -25,12 +25,12 @@ void run(const WorkerParameters& params, const Camera& camera, TileProvider& tp,
         float w = 1.0;
 
         Eigen::Vector2f jitter { rng.uniform<float>(), rng.uniform<float>() };
-        jitter *= 0.5;
-        
+        jitter *= params.single_pixel.enabled? 0.0 : 0.5;
+
         Ray r = camera.generate_ray(pt, jitter);
-
-        (void)r;
-
+        vol.log_dda_trace(r);
+        vol.log_majorant_trace(r);
+        
         // sample lambda
         // sample Li
         // match to XYZ
