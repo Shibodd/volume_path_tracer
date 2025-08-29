@@ -29,8 +29,8 @@ int main() {
   vpt::Configuration cfg = vpt::read_configuration("configuration.json");
 
   // vpt::VolumeGrids grids = vpt::VolumeGrids::generate_donut();
-  vpt::VolumeGrids grids = vpt::VolumeGrids::read_from_file(cfg.volume_path);
-  vpt::Volume vol(grids);
+  vpt::VolumeGrids grids = vpt::VolumeGrids::read_from_file(cfg.volume_parameters.volume_path);
+  vpt::Volume vol(grids, cfg.volume_parameters.sigma_a, cfg.volume_parameters.sigma_s);
 
   vpt::TileProvider provider(cfg.output_image.size, cfg.num_waves, cfg.tile_size);
 

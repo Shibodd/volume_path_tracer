@@ -47,7 +47,7 @@ private:
 };
 
 struct Volume {
-  Volume(const VolumeGrids& grids);
+  Volume(const VolumeGrids& grids, float sigma_a, float sigma_s);
 
   void log_dda_trace(const Ray& vpt_ray, const VolumeGrids::AccessorT& density_accessor) const;
   void log_majorant_trace(const Ray& vpt_ray, const VolumeGrids::AccessorT& density_accessor) const;
@@ -57,8 +57,16 @@ struct Volume {
 
   VolumeGrids::AccessorT make_temperature_accessor() const { return m_grids.temperature().getAccessor(); }
   VolumeGrids::AccessorT make_density_accessor() const { return m_grids.density().getAccessor(); }
+
+  // I really hate that these are here... but whatever - this class is already an almost useless wrapper
+  float sigma_a() const { return m_sigma_a; }
+  float sigma_s() const { return m_sigma_s; }
+  float sigma_t() const { return m_sigma_s + m_sigma_a; }
+
 private:
   const VolumeGrids& m_grids;
+  float m_sigma_a;
+  float m_sigma_s;
 };
 
 } // namespace vpt

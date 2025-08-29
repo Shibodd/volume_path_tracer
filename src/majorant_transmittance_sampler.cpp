@@ -9,11 +9,9 @@ MajorantTransmittanceSampler::MajorantTransmittanceSampler(
       RandomNumberGenerator& rng,
       const VolumeGrids::AccessorT& density_accessor,
       const VolumeGrids::AccessorT& temperature_accessor,
-      float sigma_a,
-      float sigma_s)
+      float sigma_t)
   : m_T_maj(1.0f),
-    m_sigma_a(sigma_a),
-    m_sigma_s(sigma_s),
+    m_sigma_t(sigma_t),
     m_rng(rng),
     m_iterator(it),
     m_density_sampler(density_accessor),
@@ -33,8 +31,8 @@ std::optional<MediumProperties> MajorantTransmittanceSampler::next() {
 
     assert(m_segment);
 
-    // Compute sigma_majorant for the current segment
-    float sigma_maj = m_segment->d_maj * (m_sigma_a + m_sigma_s);
+    // Compute sigma_maj for the current segment
+    float sigma_maj = m_segment->d_maj * m_sigma_t;
 
     // Sample the next point
     float dt = sample_exponential(m_rng.uniform<float>(), sigma_maj);
@@ -52,8 +50,6 @@ std::optional<MediumProperties> MajorantTransmittanceSampler::next() {
       return MediumProperties {
         .point = nanovdb_to_eigen_f(point),
         .sigma_maj = sigma_maj,
-        .sigma_a = density * m_sigma_a,
-        .sigma_s = density * m_sigma_s,
         .density = density,
         .temperature = m_temperature_sampler(point)
       };

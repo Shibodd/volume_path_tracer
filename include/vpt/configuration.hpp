@@ -29,14 +29,20 @@ struct WorkerParameters {
   bool use_jitter;
 };
 
-struct Configuration {
+struct VolumeParameters {
   std::filesystem::path volume_path;
+  float sigma_a;
+  float sigma_s;
+};
+
+struct Configuration {
   OutputImage output_image;
   image_size_t tile_size;
   unsigned int num_waves;
   unsigned int num_workers;
   CameraParameters camera_parameters;
   WorkerParameters worker_parameters;
+  VolumeParameters volume_parameters;
 };
 
 Configuration read_configuration(const std::filesystem::path& path);

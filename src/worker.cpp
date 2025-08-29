@@ -42,8 +42,7 @@ void run(const WorkerParameters& params, const Volume& vol, const Camera& camera
             rng,
             density_acc,
             temperature_acc,
-            0.1f,
-            0.1f
+            vol.sigma_t()
           );
 
           while (sampler.next()) {}

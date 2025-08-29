@@ -9,8 +9,6 @@ namespace vpt {
 struct MediumProperties {
   Eigen::Vector3f point;
   float sigma_maj;
-  float sigma_a;
-  float sigma_s;
   float density;
   float temperature;
 };
@@ -21,8 +19,7 @@ struct MajorantTransmittanceSampler {
     RandomNumberGenerator& rng,
     const VolumeGrids::AccessorT& density_accessor,
     const VolumeGrids::AccessorT& temperature_accessor,
-    float sigma_a,
-    float sigma_s
+    float sigma_t
   );
 
   float T_maj() const { return m_T_maj; }
@@ -31,8 +28,7 @@ struct MajorantTransmittanceSampler {
 private:
   float m_T_maj;
 
-  float m_sigma_a;
-  float m_sigma_s;
+  float m_sigma_t;
 
   RandomNumberGenerator& m_rng;
   RayMajorantIterator m_iterator;

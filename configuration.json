@@ -1,5 +1,4 @@
 {
-  "volume_path": "scenes/fire.nvdb",
   "output_image": {
     "path": "output.png", 
     "size": [500, 700]
@@ -10,6 +9,11 @@
       "coord": [1308, 507]
     },
     "use_jitter": false
+  },
+  "volume_parameters": {
+    "volume_path": "scenes/fire.nvdb",
+    "sigma_s": 0.1,
+    "sigma_a": 0.1
   },
   "tile_size": [200, 200],
   "num_waves": 1,

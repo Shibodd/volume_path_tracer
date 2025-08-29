@@ -153,7 +153,8 @@ static inline void fix_majorants_for_interpolation(VolumeGrids::GridT& density, 
   }
 }
 
-Volume::Volume(const VolumeGrids& grids) : m_grids(grids) {
+Volume::Volume(const VolumeGrids& grids, float sigma_a, float sigma_s)
+    : m_grids(grids), m_sigma_a(sigma_a), m_sigma_s(sigma_s) {
   fix_majorants_for_interpolation(m_grids.density(), 1);
 }
 
