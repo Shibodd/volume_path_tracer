@@ -1,9 +1,13 @@
 #include <vpt/worker.hpp>
 #include <vpt/spectral.hpp>
+#include <vpt/majorant_transmittance_sampler.hpp>
 
 namespace vpt {
 
 void run(const WorkerParameters& params, const Volume& vol, const Camera& camera, TileProvider& tp, Image<float, 4>& m_film, RandomNumberGenerator rng) {
+  auto density_acc = vol.make_density_accessor();
+  auto temperature_acc = vol.make_temperature_accessor();
+
   while (auto tok = tp.next()) {
     image_rect_t rect = tok.compute_rect();
     
@@ -31,17 +35,20 @@ void run(const WorkerParameters& params, const Volume& vol, const Camera& camera
 
         // vol.log_dda_trace(r);
         // vol.log_majorant_trace(r);
-        
-        if (auto intersection = vol.intersect(r)) {
-          float sum = 0.0f;
 
-          while (auto segment = intersection->next()) {
-            const RayMajorantIterator::Segment& seg = *segment;
+        if (auto intersection = vol.intersect(r, density_acc)) {
+          MajorantTransmittanceSampler sampler(
+            *intersection,
+            rng,
+            density_acc,
+            temperature_acc,
+            0.1f,
+            0.1f
+          );
 
-            sum += seg.majorant;
-          }
+          while (sampler.next()) {}
 
-          sample = Eigen::Vector3f::Ones() * std::clamp(1.0f / sum, 0.0f, 1.0f);
+          sample = decltype(sample)::Ones() * sampler.T_maj();
         }
         
         // sample lambda
