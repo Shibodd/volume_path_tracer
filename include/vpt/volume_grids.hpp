@@ -11,6 +11,7 @@ namespace vpt {
 struct VolumeGrids {
   using GridHandleT = nanovdb::GridHandle<nanovdb::HostBuffer>;
   using GridT = nanovdb::NanoGrid<float>;
+  using AccessorT = GridT::AccessorType;
 
   VolumeGrids(GridHandleT&& density);
   VolumeGrids(GridHandleT&& density, GridHandleT&& temperature);

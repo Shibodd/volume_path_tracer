@@ -1,6 +1,8 @@
 #ifndef VPT_RANDOM_HPP
 #define VPT_RANDOM_HPP
 
+#include <cmath>
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-but-set-parameter"
 #include <pcg/pcg_random.hpp>
@@ -9,6 +11,11 @@
 #include <vpt/hash.hpp>
 
 namespace vpt {
+
+/* exp(-ax) */
+static inline float sample_exponential(float u, float a) {
+  return -std::log(1 - u) / a;
+}
 
 struct RandomNumberGenerator {
   using engine = pcg32_fast;

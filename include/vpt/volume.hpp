@@ -10,6 +10,7 @@
 #pragma GCC diagnostic ignored "-Wdeprecated-copy"
 #include <nanovdb/math/Ray.h>
 #include <nanovdb/math/HDDA.h>
+#include <nanovdb/math/SampleFromVoxels.h>
 #pragma GCC diagnostic pop
 
 #include <vpt/volume_grids.hpp>
@@ -27,30 +28,35 @@ struct RayMajorantIterator {
   struct Segment {
     float t0;
     float t1;
-    float majorant;
+    float d_maj;
   };
-
+  
   std::optional<Segment> next();
-  RayMajorantIterator(const RayT& ray, const GridT& density);
+  RayMajorantIterator(const RayT& ray, const GridT& density, const GridT::AccessorType& density_accessor);
+
+  const RayT& ray() const { return m_ray; }
 
 private:
   float get_current_majorant();
 
   float m_scale;
   RayT m_ray;
-  GridT::AccessorType m_acc;
-
+  
+  const GridT::AccessorType& m_acc;
   nanovdb::math::HDDA<RayT> m_hdda;
 };
 
 struct Volume {
   Volume(const VolumeGrids& grids);
 
-  void log_dda_trace(const Ray& vpt_ray) const;
-  void log_majorant_trace(const Ray& vpt_ray) const;
+  void log_dda_trace(const Ray& vpt_ray, const VolumeGrids::AccessorT& density_accessor) const;
+  void log_majorant_trace(const Ray& vpt_ray, const VolumeGrids::AccessorT& density_accessor) const;
 
-  std::optional<RayMajorantIterator> intersect(const vpt::Ray& ray) const;
+  std::optional<RayMajorantIterator> intersect(const vpt::Ray& ray, const VolumeGrids::AccessorT& density_accessor) const;
   Eigen::Vector3f world_to_density_index(const Eigen::Vector3f& world) const;
+
+  VolumeGrids::AccessorT make_temperature_accessor() const { return m_grids.temperature().getAccessor(); }
+  VolumeGrids::AccessorT make_density_accessor() const { return m_grids.density().getAccessor(); }
 private:
   const VolumeGrids& m_grids;
 };

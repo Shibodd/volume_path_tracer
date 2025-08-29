@@ -27,6 +27,7 @@ add_executable (${PROJECT_NAME}
   src/main.cpp
   src/volume_grids.cpp
   src/volume.cpp
+  src/majorant_transmittance_sampler.cpp
   src/configuration.cpp
   src/image_io.cpp
   src/tile_provider.cpp
