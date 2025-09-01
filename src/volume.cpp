@@ -38,7 +38,7 @@ std::optional<RayMajorantIterator::Segment> RayMajorantIterator::next() {
   }
 
   Segment ans;
-  ans.t0 = m_hdda.time() * m_scale;
+  ans.t0 = m_hdda.time();
   
   // Get this node's majorant value.
   float majorant = get_current_majorant();
@@ -50,7 +50,7 @@ std::optional<RayMajorantIterator::Segment> RayMajorantIterator::next() {
 
       // Veeery likely that the last segment has majorant=0... Don't return it if that's the case
       if (ans.d_maj != 0) {
-        ans.t1 = m_hdda.maxTime() * m_scale;
+        ans.t1 = m_hdda.maxTime();
         return ans;
       } else {
         return std::nullopt;
@@ -67,7 +67,7 @@ std::optional<RayMajorantIterator::Segment> RayMajorantIterator::next() {
   } while (majorant == ans.d_maj);
 
   // We stepped - so the current HDDA time is the start of the next segment - equivalently, the end of the current one.
-  ans.t1 = m_hdda.time() * m_scale;
+  ans.t1 = m_hdda.time();
   return ans;
 }
 
@@ -153,8 +153,8 @@ static inline void fix_majorants_for_interpolation(VolumeGrids::GridT& density, 
   }
 }
 
-Volume::Volume(const VolumeGrids& grids, float sigma_a, float sigma_s)
-    : m_grids(grids), m_sigma_a(sigma_a), m_sigma_s(sigma_s) {
+Volume::Volume(const VolumeGrids& grids, const VolumeParameters& params)
+    : m_grids(grids), m_params(params) {
   fix_majorants_for_interpolation(m_grids.density(), 1);
 }
 
@@ -173,9 +173,9 @@ void Volume::log_majorant_trace(const Ray& ray, const VolumeGrids::AccessorT& de
     while (auto seg_opt = iter.next()) {
       const RayMajorantIterator::Segment& segment = *seg_opt;
 
-      Eigen::Vector3f p0 = world_to_density_index(ray.eval(segment.t0));
-      Eigen::Vector3f p1 = world_to_density_index(ray.eval(segment.t1));
-      print_csv(log, p0.x(), p0.y(), p0.z(), p1.x(), p1.y(), p1.z(), segment.t0, segment.t1, segment.d_maj) << '\n';
+      Eigen::Vector3f p0 = world_to_density_index(ray.eval(segment.t0 * iter.idx_to_world_scale()));
+      Eigen::Vector3f p1 = world_to_density_index(ray.eval(segment.t1 * iter.idx_to_world_scale()));
+      print_csv(log, p0.x(), p0.y(), p0.z(), p1.x(), p1.y(), p1.z(), segment.t0 * iter.idx_to_world_scale(), segment.t1 * iter.idx_to_world_scale(), segment.d_maj) << '\n';
     }
   }
 }

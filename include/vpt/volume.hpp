@@ -13,6 +13,7 @@
 #include <nanovdb/math/SampleFromVoxels.h>
 #pragma GCC diagnostic pop
 
+#include <vpt/configuration.hpp>
 #include <vpt/volume_grids.hpp>
 #include <vpt/ray.hpp>
 
@@ -26,8 +27,8 @@ struct RayMajorantIterator {
   static constexpr auto LEAF_DIM = GridT::LeafNodeType::DIM;
 
   struct Segment {
-    float t0;
-    float t1;
+    float t0; // in voxel units
+    float t1; // in voxel units
     float d_maj;
   };
   
@@ -35,6 +36,8 @@ struct RayMajorantIterator {
   RayMajorantIterator(const RayT& ray, const GridT& density, const GridT::AccessorType& density_accessor);
 
   const RayT& ray() const { return m_ray; }
+
+  float idx_to_world_scale() const { return m_scale; }
 
 private:
   float get_current_majorant();
@@ -47,7 +50,7 @@ private:
 };
 
 struct Volume {
-  Volume(const VolumeGrids& grids, float sigma_a, float sigma_s);
+  Volume(const VolumeGrids& grids, const VolumeParameters& params);
 
   void log_dda_trace(const Ray& vpt_ray, const VolumeGrids::AccessorT& density_accessor) const;
   void log_majorant_trace(const Ray& vpt_ray, const VolumeGrids::AccessorT& density_accessor) const;
@@ -55,18 +58,22 @@ struct Volume {
   std::optional<RayMajorantIterator> intersect(const vpt::Ray& ray, const VolumeGrids::AccessorT& density_accessor) const;
   Eigen::Vector3f world_to_density_index(const Eigen::Vector3f& world) const;
 
-  VolumeGrids::AccessorT make_temperature_accessor() const { return m_grids.temperature().getAccessor(); }
+  std::optional<VolumeGrids::AccessorT> make_temperature_accessor() const {
+    if (m_grids.has_temperature())
+      return m_grids.temperature().getAccessor();
+    else
+      return std::nullopt;
+  }
   VolumeGrids::AccessorT make_density_accessor() const { return m_grids.density().getAccessor(); }
 
   // I really hate that these are here... but whatever - this class is already an almost useless wrapper
-  float sigma_a() const { return m_sigma_a; }
-  float sigma_s() const { return m_sigma_s; }
-  float sigma_t() const { return m_sigma_s + m_sigma_a; }
+  const VolumeParameters& params() const { return m_params; }
+
+  const VolumeGrids& grids() const { return m_grids; }
 
 private:
   const VolumeGrids& m_grids;
-  float m_sigma_a;
-  float m_sigma_s;
+  VolumeParameters m_params;
 };
 
 } // namespace vpt

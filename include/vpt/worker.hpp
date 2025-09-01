@@ -8,7 +8,6 @@
 #include <vpt/random.hpp>
 
 namespace vpt {
-
 void run(const WorkerParameters& params, const Volume& volume, const Camera& camera, TileProvider& tp, Image<float, 4>& m_film, RandomNumberGenerator rng);
 
 } // namespace vpt

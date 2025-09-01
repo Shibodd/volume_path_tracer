@@ -26,13 +26,20 @@ struct WorkerParameters {
     bool enabled;
     image_point_t coord;
   } single_pixel;
+
   bool use_jitter;
+  Eigen::Vector3f ambient_light;
+  float ambient_light_multiplier;
+  unsigned int max_depth;
 };
 
 struct VolumeParameters {
-  std::filesystem::path volume_path;
+  float henyey_greenstein_g;
+  float le_scale;
   float sigma_a;
   float sigma_s;
+  float temperature_offset;
+  float temperature_scale;
 };
 
 struct Configuration {
@@ -42,6 +49,7 @@ struct Configuration {
   unsigned int num_workers;
   CameraParameters camera_parameters;
   WorkerParameters worker_parameters;
+  std::filesystem::path volume_path;
   VolumeParameters volume_parameters;
 };
 

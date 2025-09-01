@@ -1,28 +1,35 @@
 {
   "output_image": {
     "path": "output.png", 
-    "size": [500, 700]
+    "size": [1280, 720]
   },
   "worker_parameters": {
     "single_pixel": {
       "enabled": false,
-      "coord": [1308, 507]
+      "coord": [550, 450]
     },
-    "use_jitter": false
+    "use_jitter": false,
+    "ambient_light": [ 0.25, 0.25, 0.5 ],
+    "ambient_light_multiplier": 30,
+    "max_depth": 100
   },
   "volume_parameters": {
-    "volume_path": "scenes/fire.nvdb",
-    "sigma_s": 0.1,
-    "sigma_a": 0.1
+    "sigma_s": 0.2,
+    "sigma_a": 0.6,
+    "henyey_greenstein_g": 0.7,
+    "le_scale": 1e-8,
+    "temperature_offset": 300.0,
+    "temperature_scale": 40.0
   },
-  "tile_size": [200, 200],
-  "num_waves": 1,
+  "tile_size": [64, 64],
+  "num_waves": 128,
   "num_workers": 8,
+  "volume_path": "scenes/fire.nvdb",
   "camera_parameters": {
     "position": [ 0.0, 25.0, 70.0 ],
     "look": [ 0.0, 25.0, 0.0 ],
     "up": [ 0.0, 1.0, 0.0 ],
     "vfov_deg": 50,
-    "imaging_ratio": 1
+    "imaging_ratio": 1e-1
   }
 }

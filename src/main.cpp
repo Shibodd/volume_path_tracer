@@ -9,8 +9,6 @@
 #include <vpt/color.hpp>
 #include <vpt/spectral.hpp>
 
-#include <random>
-
 void film_to_image(const vpt::Image<float, 4>& film, vpt::Image<unsigned char, 3>& image) {
   for (Eigen::Index i = 0; i < image.data().rows(); ++i) {
     for (Eigen::Index j = 0; j < image.data().cols(); ++j) {
@@ -29,8 +27,8 @@ int main() {
   vpt::Configuration cfg = vpt::read_configuration("configuration.json");
 
   // vpt::VolumeGrids grids = vpt::VolumeGrids::generate_donut();
-  vpt::VolumeGrids grids = vpt::VolumeGrids::read_from_file(cfg.volume_parameters.volume_path);
-  vpt::Volume vol(grids, cfg.volume_parameters.sigma_a, cfg.volume_parameters.sigma_s);
+  vpt::VolumeGrids grids = vpt::VolumeGrids::read_from_file(cfg.volume_path);
+  vpt::Volume vol(grids, cfg.volume_parameters);
 
   vpt::TileProvider provider(cfg.output_image.size, cfg.num_waves, cfg.tile_size);
 

@@ -11,14 +11,16 @@ struct MediumProperties {
   float sigma_maj;
   float density;
   float temperature;
+  float ray_t;
 };
 
 struct MajorantTransmittanceSampler {
   MajorantTransmittanceSampler(
     RayMajorantIterator& it,
     RandomNumberGenerator& rng,
+    const VolumeGrids& grids,
     const VolumeGrids::AccessorT& density_accessor,
-    const VolumeGrids::AccessorT& temperature_accessor,
+    const VolumeGrids::AccessorT* temperature_accessor,
     float sigma_t
   );
 
@@ -33,8 +35,9 @@ private:
   RandomNumberGenerator& m_rng;
   RayMajorantIterator m_iterator;
 
+  const VolumeGrids& m_grids;
   nanovdb::math::SampleFromVoxels<VolumeGrids::AccessorT, 1> m_density_sampler;
-  nanovdb::math::SampleFromVoxels<VolumeGrids::AccessorT, 1> m_temperature_sampler;
+  std::optional<nanovdb::math::SampleFromVoxels<VolumeGrids::AccessorT, 1>> m_temperature_sampler;
 
   std::optional<RayMajorantIterator::Segment> m_segment;
 };
