@@ -1,5 +1,6 @@
 #include <vpt/worker.hpp>
 #include <vpt/spectral.hpp>
+#include <vpt/color.hpp>
 #include <vpt/majorant_transmittance_sampler.hpp>
 
 namespace vpt {
@@ -137,10 +138,8 @@ void run(const WorkerParameters& params, const Volume& vol, const Camera& camera
             } else if (event == ScatterEvent::Absorption) {
               float temp_K = props->temperature * vol.params().temperature_scale + vol.params().temperature_offset;
 
-              if (temp_K > 400.0f) {
-                // s l o w
-                L += vol.params().le_scale * spectrum_to_xyz(BlackbodyEmittedRadianceSpectrum(temp_K));
-              }
+              L += vol.params().le_scale * blackbody_radiation_xyz(temp_K);
+              
               logger.absorbed();
               terminated = true;
               break;

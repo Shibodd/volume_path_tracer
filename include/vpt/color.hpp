@@ -29,6 +29,9 @@ static inline Eigen::Vector3f linsrgb_to_srgb(const Eigen::Vector3f linsrgb) {
   };
 }
 
+void init_blackbody_radiation_xyz();
+Eigen::Vector3f blackbody_radiation_xyz(float temperature_k);
+
 } // namespace vpt
 
 #endif // !VPT_COLOR_HPP

@@ -23,6 +23,10 @@ static inline std::ostream& print_csv(std::ostream& os, const T& first, const Ar
   return print_csv(os << first << ",", rest...);
 }
 
+template <typename T, typename F>
+static inline T lerp(const T& a, const T& b, const F& t) {
+  return a + (b - a) * t;
+}
 /**
 Generate an arbitrary frame of reference with one of the axis equal to v1
 

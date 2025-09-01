@@ -35,9 +35,10 @@ add_executable (${PROJECT_NAME}
   src/ray.cpp
   src/worker.cpp
   src/spectral.cpp
+  src/precompute_blackbody.cpp
 )
 
 target_include_directories (${PROJECT_NAME} PRIVATE include)
-target_compile_options (${PROJECT_NAME} PRIVATE -Wall -Wpedantic -Werror -Wextra -Wdouble-promotion -Wfloat-conversion)
+target_compile_options (${PROJECT_NAME} PRIVATE -g -Wall -Wpedantic -Werror -Wextra -Wdouble-promotion -Wfloat-conversion)
 target_link_libraries (${PROJECT_NAME} nanovdb glaze::glaze Eigen3::Eigen raylib spng pcg-cpp)
 target_compile_features (${PROJECT_NAME} PRIVATE cxx_std_23)

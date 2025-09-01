@@ -24,6 +24,8 @@ void film_to_image(const vpt::Image<float, 4>& film, vpt::Image<unsigned char, 3
 }
 
 int main() {
+  vpt::init_blackbody_radiation_xyz();
+
   vpt::Configuration cfg = vpt::read_configuration("configuration.json");
 
   // vpt::VolumeGrids grids = vpt::VolumeGrids::generate_donut();
@@ -54,7 +56,7 @@ int main() {
   }
 
   InitWindow(cfg.output_image.size.x(), cfg.output_image.size.y(), ("vpt - " + cfg.volume_path.filename().string()).c_str());
-  SetTargetFPS(30);
+  SetTargetFPS(5);
 
   Image image;
   image.data = img.data().data();
