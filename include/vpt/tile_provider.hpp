@@ -59,6 +59,12 @@ struct TileProvider {
   void stop_at_next_wave();
   void stop_now();
 
+  unsigned int progress() const {
+    size_t max_jid = m_wave_start_monitor.requested_waves * m_tile_wave.size();
+    float ratio = static_cast<float>(m_job_idx) / static_cast<float>(max_jid);
+    return static_cast<unsigned int>(ratio * 100.0f);
+  }
+
 private:
   image_rect_t compute_tile_rect(tile_index_t tile_idx) const;
   bool wave_should_be_processed(wave_index_t idx);

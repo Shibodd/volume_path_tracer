@@ -30,6 +30,9 @@ int main() {
   vpt::VolumeGrids grids = vpt::VolumeGrids::read_from_file(cfg.volume_path);
   vpt::Volume vol(grids, cfg.volume_parameters);
 
+  if (grids.has_temperature())
+    std::cout << "TempMin: " << grids.temperature().tree().root().minimum() << ", TempMax: " << grids.temperature().tree().root().maximum() << std::endl;
+
   vpt::TileProvider provider(cfg.output_image.size, cfg.num_waves, cfg.tile_size);
 
   std::vector<std::jthread> threads;
@@ -50,7 +53,7 @@ int main() {
     });
   }
 
-  InitWindow(cfg.output_image.size.x(), cfg.output_image.size.y(), "raylib [core] example - basic window");
+  InitWindow(cfg.output_image.size.x(), cfg.output_image.size.y(), ("vpt - " + cfg.volume_path.filename().string()).c_str());
   SetTargetFPS(30);
 
   Image image;
@@ -65,18 +68,27 @@ int main() {
   while (!WindowShouldClose())    // Detect window close button or ESC key
   { 
     BeginDrawing();
-        ClearBackground(RAYWHITE);
+        ClearBackground(PURPLE);
         
         film_to_image(film, img);
 
         UpdateTexture(texture, img.data().data());
 
         DrawTexture(texture, 0, 0, WHITE);
-    EndDrawing();
 
+        unsigned int prog = provider.progress();
+
+        DrawText((std::to_string(prog) + "%").c_str(), 20, 20, 24, BLACK);
+    EndDrawing();
   }
 
   UnloadTexture(texture);
+
+  vptINFO("Waiting for all workers to reach the next wave before saving the image...");
+  provider.stop_at_next_wave();
+  for (auto& thr : threads) {
+    thr.join();
+  }
   
   film_to_image(film, img);
   img.save(cfg.output_image.path.c_str());
