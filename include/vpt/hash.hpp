@@ -10,6 +10,13 @@
 namespace vpt {
 namespace detail {
 
+
+/*
+This function was originally written by Austin Appleby, who generously placed it in the public domain.
+https://github.com/explosion/murmurhash
+
+This is a modification of MurmurHash64A which only supports little endian and assumes the key size is already a multiple of 8 bytes.
+*/
 static inline uint64_t MurmurHash64A_padded ( const void * key, int len, uint64_t seed )
 {
   constexpr uint64_t m = 0xc6a4a7935bd1e995;

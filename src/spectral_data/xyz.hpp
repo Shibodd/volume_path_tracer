@@ -5,6 +5,15 @@ namespace spectra {
 namespace cie_xyz {
 namespace data {
 
+/*
+All table values in this file are copied from the PBRT project
+
+// https://github.com/mmp/pbrt-v4
+// pbrt is Copyright(c) 1998-2020 Matt Pharr, Wenzel Jakob, and Greg Humphreys.
+// The pbrt source code is licensed under the Apache License, Version 2.0.
+// SPDX: Apache-2.0
+*/
+
 constexpr DenseSpectrum::data_t X {
   // CIE X function values
   0.0001299000,   0.0001458470,   0.0001638021,   0.0001840037,   0.0002066902,

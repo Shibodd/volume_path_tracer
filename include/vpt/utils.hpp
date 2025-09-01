@@ -23,7 +23,15 @@ static inline std::ostream& print_csv(std::ostream& os, const T& first, const Ar
   return print_csv(os << first << ",", rest...);
 }
 
-/** Generate an arbitrary frame of reference with one of the axis equal to v1 */
+/**
+Generate an arbitrary frame of reference with one of the axis equal to v1
+
+Modified PBRT's implementation.
+// https://github.com/mmp/pbrt-v4
+// pbrt is Copyright(c) 1998-2020 Matt Pharr, Wenzel Jakob, and Greg Humphreys.
+// The pbrt source code is licensed under the Apache License, Version 2.0.
+// SPDX: Apache-2.0
+*/
 static inline void coordinate_system(Eigen::Vector3f v1, Eigen::Vector3f& v2, Eigen::Vector3f& v3) {
   float sign = std::copysign(1.0f, v1.z());
   float a = -1.0f / (sign + v1.z());

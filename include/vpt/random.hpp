@@ -46,16 +46,13 @@ static inline T sample_discrete(std::initializer_list<Choice<T>> choices, float 
   return std::prev(end)->value;
 }
 
-static inline float henyey_greenstein(float cos_theta, float g) {
-  float g2 = std::pow(g, 2);
-
-  float num = 1.0f - g2;
-  float den = 1.0f + g2 + 2.0f * g * cos_theta;
-
-  constexpr float INV_4PI = static_cast<float>(std::numbers::inv_pi) / 4.0f;
-  return INV_4PI * num / (den * std::sqrt(std::max(0.0f, den)));
-}
-
+/*
+This function is a modified version of PBRT's implementation
+// https://github.com/mmp/pbrt-v4
+// pbrt is Copyright(c) 1998-2020 Matt Pharr, Wenzel Jakob, and Greg Humphreys.
+// The pbrt source code is licensed under the Apache License, Version 2.0.
+// SPDX: Apache-2.0
+*/
 static inline Eigen::Vector3f sample_henyey_greenstein(const Eigen::Vector3f& w, const Eigen::Vector2f& u, float g) {
   // Sample direction in local spherical coordinates
   float g2 = std::pow(g, 2.0f);

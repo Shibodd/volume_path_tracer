@@ -70,6 +70,11 @@ void run(const WorkerParameters& params, const Volume& vol, const Camera& camera
           // std::this_thread::sleep_for(std::chrono::seconds(1));
         }
 
+        /*
+          Based on PBRT's SimpleVolPathIntegrator
+          https://github.com/mmp/pbrt-v4
+        */
+
         Eigen::Vector2f jitter { rng.uniform<float>(), rng.uniform<float>() };
         jitter *= params.use_jitter? 0.5 : 0.0;
 
