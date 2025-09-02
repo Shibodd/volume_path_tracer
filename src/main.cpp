@@ -23,10 +23,15 @@ void film_to_image(const vpt::Image<float, 4>& film, vpt::Image<unsigned char, 3
   }
 }
 
-int main() {
+int main(int argc, char* argv[]) {
+  if (argc != 2) {
+    vptFATAL("Usage: " << argv[0] << " config_path");
+    return 1;
+  }
+
   vpt::init_blackbody_radiation_xyz();
 
-  vpt::Configuration cfg = vpt::read_configuration("configuration.json");
+  vpt::Configuration cfg = vpt::read_configuration(argv[1]);
 
   // vpt::VolumeGrids grids = vpt::VolumeGrids::generate_donut();
   vpt::VolumeGrids grids = vpt::VolumeGrids::read_from_file(cfg.volume_path);

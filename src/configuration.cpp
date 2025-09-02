@@ -12,7 +12,7 @@ Configuration read_configuration(const std::filesystem::path& path) {
   
   glz::error_ctx err = glz::read_file_json<glz::opts {
     .error_on_missing_keys = true
-  }>(ans, "configuration.json", buf);
+  }>(ans, path.string(), buf);
 
   if (err) {
     vptFATAL("Failed to read configuration file \"" << path << "\": " << glz::format_error(err, buf));
