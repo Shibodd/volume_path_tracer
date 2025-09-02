@@ -31,6 +31,12 @@ std::optional<MediumProperties> MajorantTransmittanceSampler::next() {
       // No more segments left - quit
       if (not m_segment)
         return std::nullopt;
+
+      // If we're stepping through empty space, just skip to the next segment
+      if (m_segment->d_maj <= 0) {
+        m_segment.reset();
+        continue;
+      }
     }
 
     assert(m_segment);
