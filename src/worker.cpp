@@ -142,7 +142,7 @@ void run(const WorkerParameters& params, const Volume& vol, const Camera& camera
             logger.sampled_point(*props);
 
             float p_a = (vol.params().sigma_a * props->density) / props->sigma_maj;
-            float p_s = (vol.params().sigma_a * props->density) / props->sigma_maj;
+            float p_s = (vol.params().sigma_s * props->density) / props->sigma_maj;
             float p_n = std::max<float>(1.0f - p_a - p_s, 0.0f);
 
             if (temp_sampler) {
