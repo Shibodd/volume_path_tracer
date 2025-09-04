@@ -79,11 +79,13 @@ Eigen::Vector3f sample_Ld(const WorkerParameters& params, const Volume& vol, Ran
 
 void run(const WorkerParameters& params, const Volume& vol, const Camera& camera, TileProvider& tp, Image<float, 4>& m_film, RandomNumberGenerator rng) {
   auto density_acc = vol.grids().density().getAccessor();
-  std::optional<nanovdb::math::SampleFromVoxels<VolumeGrids::AccessorT, 1>> temp_sampler;
 
-  //if (vol.grids().has_temperature()) {
-  //  temp_sampler.emplace(vol.grids().temperature().getAccessor());
-  //}
+  std::optional<VolumeGrids::AccessorT> temp_accessor;
+  std::optional<nanovdb::math::SampleFromVoxels<VolumeGrids::AccessorT, 1>> temp_sampler; 
+  if (vol.grids().has_temperature()) {
+    temp_accessor = vol.grids().temperature().getAccessor();
+    temp_sampler.emplace(*temp_accessor);
+  }
 
   Logger<false> logger;
 
@@ -145,8 +147,8 @@ void run(const WorkerParameters& params, const Volume& vol, const Camera& camera
 
             if (temp_sampler) {
               nanovdb::Vec3f temp_coord = vol.grids().temperature().worldToIndexF(eigen_to_nanovdb_f(props->point));
-              
-              float temp_K = (*temp_sampler)(temp_coord) * vol.params().temperature_scale + vol.params().temperature_offset;
+              float temp_adim = (*temp_sampler)(temp_coord);
+              float temp_K = temp_adim * vol.params().temperature_scale + vol.params().temperature_offset;
               L += p_a * vol.params().le_scale * blackbody_radiation_xyz(temp_K);
             }
 
