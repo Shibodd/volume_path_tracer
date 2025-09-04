@@ -52,19 +52,14 @@ private:
 struct Volume {
   Volume(const VolumeGrids& grids, const VolumeParameters& params);
 
+  const Eigen::Vector3f& bounding_sphere_center() const { return m_bsphere_center; }
+  float bounding_sphere_radius() const { return m_bsphere_radius; }
+
   void log_dda_trace(const Ray& vpt_ray, const VolumeGrids::AccessorT& density_accessor) const;
   void log_majorant_trace(const Ray& vpt_ray, const VolumeGrids::AccessorT& density_accessor) const;
 
   std::optional<RayMajorantIterator> intersect(const vpt::Ray& ray, const VolumeGrids::AccessorT& density_accessor) const;
   Eigen::Vector3f world_to_density_index(const Eigen::Vector3f& world) const;
-
-  std::optional<VolumeGrids::AccessorT> make_temperature_accessor() const {
-    if (m_grids.has_temperature())
-      return m_grids.temperature().getAccessor();
-    else
-      return std::nullopt;
-  }
-  VolumeGrids::AccessorT make_density_accessor() const { return m_grids.density().getAccessor(); }
 
   // I really hate that these are here... but whatever - this class is already an almost useless wrapper
   const VolumeParameters& params() const { return m_params; }
@@ -72,6 +67,8 @@ struct Volume {
   const VolumeGrids& grids() const { return m_grids; }
 
 private:
+  Eigen::Vector3f m_bsphere_center;
+  float m_bsphere_radius;
   const VolumeGrids& m_grids;
   VolumeParameters m_params;
 };

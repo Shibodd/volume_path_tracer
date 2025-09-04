@@ -7,20 +7,16 @@ namespace vpt {
 MajorantTransmittanceSampler::MajorantTransmittanceSampler(
       RayMajorantIterator& it,
       RandomNumberGenerator& rng,
-      const VolumeGrids& grids,
+      const VolumeGrids::GridT& density_grid,
       const VolumeGrids::AccessorT& density_accessor,
-      const VolumeGrids::AccessorT* temperature_accessor,
       float sigma_t)
   : m_T_maj(1.0f),
     m_sigma_t(sigma_t),
     m_rng(rng),
     m_iterator(it),
-    m_grids(grids),
+    m_density_grid(density_grid),
     m_density_sampler(density_accessor)
-{
-  if (temperature_accessor != nullptr)
-    m_temperature_sampler.emplace(*temperature_accessor);
-}
+{}
 
 std::optional<MediumProperties> MajorantTransmittanceSampler::next() {
   while (true) {
@@ -58,20 +54,16 @@ std::optional<MediumProperties> MajorantTransmittanceSampler::next() {
       nanovdb::Vec3f point_density_grid = m_iterator.ray()(t);
 
       // Compute world position
-      nanovdb::Vec3f point_world = m_grids.density().indexToWorldF(point_density_grid);
+      nanovdb::Vec3f point_world = m_density_grid.indexToWorldF(point_density_grid);
     
       float density = m_density_sampler(point_density_grid);
       if (density <= 0.0f)
         continue;
 
-      float temperature = m_temperature_sampler? (*m_temperature_sampler)(m_grids.temperature().worldToIndexF(point_world)) : 0.0f;
-
       return MediumProperties {
         .point = nanovdb_to_eigen_f(point_world),
         .sigma_maj = sigma_maj,
-        .density = density,
-        .temperature = temperature,
-        .ray_t = t
+        .density = density
       };
     } else {
       // We're past the end of the current segment.

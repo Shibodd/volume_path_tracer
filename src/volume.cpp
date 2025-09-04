@@ -155,6 +155,11 @@ static inline void fix_majorants_for_interpolation(VolumeGrids::GridT& density, 
 
 Volume::Volume(const VolumeGrids& grids, const VolumeParameters& params)
     : m_grids(grids), m_params(params) {
+
+  nanovdb::Vec3f span = m_grids.density().worldBBox().max() - m_grids.density().worldBBox().min();
+  m_bsphere_center = nanovdb_to_eigen_f(m_grids.density().worldBBox().min() + span / 2.0f);
+  m_bsphere_radius = (span / 2).length();
+
   fix_majorants_for_interpolation(m_grids.density(), 1);
 }
 

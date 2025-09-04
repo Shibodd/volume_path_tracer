@@ -2,6 +2,7 @@
 #include <vpt/spectral.hpp>
 #include <vpt/color.hpp>
 #include <vpt/majorant_transmittance_sampler.hpp>
+#include <vpt/nanovdb_utils.hpp>
 
 namespace vpt {
 
@@ -48,9 +49,41 @@ private:
 };
 
 
+Eigen::Vector3f sample_Ld(const WorkerParameters& params, const Volume& vol, RandomNumberGenerator& rng, const Eigen::Vector3f& pos, const Eigen::Vector3f& w, VolumeGrids::AccessorT density_acc) {
+  // Only one distant light
+  Eigen::Vector3f wi = params.distant_light.inv_direction.normalized();
+  Eigen::Vector3f Li = params.distant_light.xyz * params.distant_light.multiplier;
+
+  float sigma_t = vol.params().sigma_a + vol.params().sigma_s;
+
+  // Trace the shadow ray to estimate transmittance
+  float T_ray = 1.0f;
+  Ray r(pos, wi);
+  if (auto maj_iter = vol.intersect(r, density_acc)) {
+    MajorantTransmittanceSampler sampler(*maj_iter, rng, vol.grids().density(), density_acc, sigma_t);
+
+    while (auto props = sampler.next()) {
+      float sigma_n = std::max(0.0f, props->sigma_maj - sigma_t * props->density);
+
+      T_ray *= sigma_n / props->sigma_maj;
+
+      if (T_ray <= 0.0f) {
+        return Eigen::Vector3f::Zero();
+      }
+    }
+  }
+
+  float p = henyey_greenstein(w.dot(wi), vol.params().henyey_greenstein_g);
+  return p * T_ray * Li;
+}
+
 void run(const WorkerParameters& params, const Volume& vol, const Camera& camera, TileProvider& tp, Image<float, 4>& m_film, RandomNumberGenerator rng) {
-  auto density_acc = vol.make_density_accessor();
-  auto temperature_acc = vol.make_temperature_accessor();
+  auto density_acc = vol.grids().density().getAccessor();
+  std::optional<nanovdb::math::SampleFromVoxels<VolumeGrids::AccessorT, 1>> temp_sampler;
+
+  //if (vol.grids().has_temperature()) {
+  //  temp_sampler.emplace(vol.grids().temperature().getAccessor());
+  //}
 
   Logger<false> logger;
 
@@ -99,9 +132,8 @@ void run(const WorkerParameters& params, const Volume& vol, const Camera& camera
           MajorantTransmittanceSampler sampler(
             *intersection,
             rng,
-            vol.grids(),
+            vol.grids().density(),
             density_acc,
-            temperature_acc? &*temperature_acc : nullptr,
             vol.params().sigma_a + vol.params().sigma_s
           );
           while (auto props = sampler.next()) {
@@ -111,8 +143,10 @@ void run(const WorkerParameters& params, const Volume& vol, const Camera& camera
             float p_s = (vol.params().sigma_a * props->density) / props->sigma_maj;
             float p_n = std::max<float>(1.0f - p_a - p_s, 0.0f);
 
-            if (props->temperature > 0) {
-              float temp_K = props->temperature * vol.params().temperature_scale + vol.params().temperature_offset;
+            if (temp_sampler) {
+              nanovdb::Vec3f temp_coord = vol.grids().temperature().worldToIndexF(eigen_to_nanovdb_f(props->point));
+              
+              float temp_K = (*temp_sampler)(temp_coord) * vol.params().temperature_scale + vol.params().temperature_offset;
               L += p_a * vol.params().le_scale * blackbody_radiation_xyz(temp_K);
             }
 
@@ -131,6 +165,8 @@ void run(const WorkerParameters& params, const Volume& vol, const Camera& camera
                 terminated = true;
                 break;
               }
+
+              L += sample_Ld(params, vol, rng, props->point, r.direction(), density_acc);
               
               // Evaluate phase function and compute new ray
               Eigen::Vector3f new_dir = sample_henyey_greenstein(r.direction(), { rng.uniform<float>(), rng.uniform<float>() }, vol.params().henyey_greenstein_g);
@@ -152,8 +188,9 @@ void run(const WorkerParameters& params, const Volume& vol, const Camera& camera
             break;
         }
 
+        // The ray is going to infinity and beyond.
         if (not terminated) {
-          L += params.ambient_light * params.ambient_light_multiplier;
+          L += params.infinite_light.xyz * params.infinite_light.multiplier;
         }
         
         // add to the film

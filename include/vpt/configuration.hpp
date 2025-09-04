@@ -21,6 +21,17 @@ struct CameraParameters {
   float imaging_ratio;
 };
 
+struct InfiniteLightParameters {
+  Eigen::Vector3f xyz;
+  float multiplier;
+};
+
+struct DistantLightParameters {
+  Eigen::Vector3f xyz;
+  float multiplier;
+  Eigen::Vector3f inv_direction;
+};
+
 struct WorkerParameters {
   struct SinglePixelMode {
     bool enabled;
@@ -28,8 +39,8 @@ struct WorkerParameters {
   } single_pixel;
 
   bool use_jitter;
-  Eigen::Vector3f ambient_light;
-  float ambient_light_multiplier;
+  InfiniteLightParameters infinite_light;
+  DistantLightParameters distant_light;
   unsigned int max_depth;
 };
 

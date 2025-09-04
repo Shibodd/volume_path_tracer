@@ -1,35 +1,42 @@
 {
   "output_image": {
     "path": "output.png", 
-    "size": [1280, 720]
+    "size": [640, 360]
   },
   "worker_parameters": {
     "single_pixel": {
       "enabled": false,
       "coord": [550, 450]
     },
-    "use_jitter": false,
-    "ambient_light": [ 0.25, 0.25, 0.5 ],
-    "ambient_light_multiplier": 30,
-    "max_depth": 100
+    "infinite_light": {
+      "xyz": [ 0.25, 0.25, 0.5 ],
+      "multiplier": 15
+    },
+    "distant_light": {
+      "xyz": [ 0.95047, 1.0, 1.08883 ],
+      "inv_direction": [0.5826, 0.7660, 0.2717],
+      "multiplier": 10000
+    },
+    "use_jitter": true,
+    "max_depth": 1000000
   },
   "volume_parameters": {
-    "sigma_s": 0.2,
-    "sigma_a": 0.6,
-    "henyey_greenstein_g": 0.7,
-    "le_scale": 1e-8,
+    "sigma_s": 5.0,
+    "sigma_a": 0.015,
+    "henyey_greenstein_g": 0.877,
+    "le_scale": 0.0,
     "temperature_offset": 300.0,
     "temperature_scale": 40.0
   },
   "tile_size": [64, 64],
-  "num_waves": 128,
+  "num_waves": 1000,
   "num_workers": 8,
-  "volume_path": "scenes/fire.nvdb",
+  "volume_path": "volumes/wdas_cloud.nvdb",
   "camera_parameters": {
-    "position": [ 0.0, 25.0, 70.0 ],
-    "look": [ 0.0, 25.0, 0.0 ],
-    "up": [ 0.0, 1.0, 0.0 ],
-    "vfov_deg": 50,
+    "position": [ 648.064, -82.473, -63.856 ],
+    "look": [ 6.021, 100.043, -43.679 ],
+    "up": [ 0.273, 0.962, -0.009 ],
+    "vfov_deg": 35,
     "imaging_ratio": 1e-1
   }
 }

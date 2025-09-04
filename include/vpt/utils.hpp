@@ -50,6 +50,21 @@ static inline void coordinate_system(Eigen::Vector3f v1, Eigen::Vector3f& v2, Ei
   v3.z() = -v1.y();
 }
 
+
+/**
+Adapted from PBRT.
+// https://github.com/mmp/pbrt-v4
+// pbrt is Copyright(c) 1998-2020 Matt Pharr, Wenzel Jakob, and Greg Humphreys.
+// The pbrt source code is licensed under the Apache License, Version 2.0.
+// SPDX: Apache-2.0
+*/
+static inline float henyey_greenstein(float cos_theta, float g) {
+  float den = 1.0f + g*g + 2.0f * g * cos_theta;
+  constexpr float inv_4_pi = static_cast<float>(std::numbers::inv_pi / 4.0);
+
+  return inv_4_pi * (1.0f - g*g) / (den * std::sqrt(std::max(0.0f, den)));
+}
+
 } // namespace vpt
 
 #endif // !VPT_UTILS_HPP
