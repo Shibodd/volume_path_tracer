@@ -6,15 +6,18 @@
 
 namespace vpt {
 
-/** @return The dimension at which HDDA should step to not skip any active leaf, when starting at the specified coordinate. */
+
+/** -@return The dimension at which HDDA should step to not skip any active leaf, when starting at the specified coordinate. 
 inline static uint32_t get_hdda_dim(const RayMajorantIterator::CoordT& ijk, const RayMajorantIterator::GridT::AccessorType& acc, const RayMajorantIterator::RayT& ray) {
   // Note that we only want to iterate up to the leaf level, not up to the voxel level.
-  return std::max<uint32_t>(RayMajorantIterator::LEAF_DIM, acc.getDim(ijk, ray));
+  return std::max<uint32_t>(0, acc.getDim(ijk, ray));
 }
+*/
+
 
 float RayMajorantIterator::get_current_majorant() {
 
-  auto ijk = m_ray(m_hdda.time()).floor();
+  auto ijk = m_ray(m_dda.time()).floor();
   
   if (const auto* leaf = m_acc.probeLeaf(ijk)) {
     // This is a leaf. The majorant is stored in maximum.
@@ -33,24 +36,24 @@ float RayMajorantIterator::get_current_majorant() {
 
 std::optional<RayMajorantIterator::Segment> RayMajorantIterator::next() {
   // We already left the bounding box. There's nothing left.
-  if (m_hdda.time() >= m_hdda.maxTime()) {
+  if (m_dda.time() >= m_dda.maxTime()) {
     return std::nullopt;
   }
 
   Segment ans;
-  ans.t0 = m_hdda.time();
+  ans.t0 = m_dda.time();
   
   // Get this node's majorant value.
   float majorant = get_current_majorant();
   do {
     ans.d_maj = majorant;
 
-    if (not m_hdda.step()) {
+    if (not m_dda.step()) {
       // We're leaving the bounding box - this is the last segment and we're done.
 
       // Veeery likely that the last segment has majorant=0... Don't return it if that's the case
       if (ans.d_maj != 0) {
-        ans.t1 = m_hdda.maxTime();
+        ans.t1 = m_dda.maxTime();
         return ans;
       } else {
         return std::nullopt;
@@ -58,8 +61,8 @@ std::optional<RayMajorantIterator::Segment> RayMajorantIterator::next() {
     }
 
     // Update the HDDA with the new step dimension.
-    uint32_t new_dim = get_hdda_dim(m_hdda.voxel(), m_acc, m_ray);
-    m_hdda.update(m_ray, new_dim);
+    // uint32_t new_dim = get_hdda_dim(m_ray(m_hdda.time() + 1.0001f).floor(), m_acc, m_ray);
+    // m_hdda.update(m_ray, new_dim);
 
     // Try to compute the majorant after the step. If it is the same, we'll bundle the two segments together.
     // This is useful when traversing empty space, because although efficient the stepping can be quite pessimistic.
@@ -67,7 +70,7 @@ std::optional<RayMajorantIterator::Segment> RayMajorantIterator::next() {
   } while (majorant == ans.d_maj);
 
   // We stepped - so the current HDDA time is the start of the next segment - equivalently, the end of the current one.
-  ans.t1 = m_hdda.time();
+  ans.t1 = m_dda.time();
   return ans;
 }
 
@@ -87,7 +90,7 @@ RayMajorantIterator::RayMajorantIterator(const RayT& ray, const GridT& density, 
   : m_scale(1 / density.worldToIndexDirF(ray.dir()).length()),
     m_ray(ray), 
     m_acc(density_accessor),
-    m_hdda(m_ray, get_hdda_dim(m_ray.start().floor(), m_acc, m_ray))
+    m_dda(m_ray)// , get_hdda_dim(ray.start().floor(), density_accessor, ray))
 {
 }
 
