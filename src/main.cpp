@@ -56,6 +56,7 @@ int main(int argc, char* argv[]) {
   unsigned int completion_count = 0;
   std::chrono::milliseconds completion_max_elapsed(0);
 
+  provider.reset_eta();
   for (unsigned int i = 0; i < cfg.num_workers; ++i) {
     threads.emplace_back([&]() {
       auto start = std::chrono::high_resolution_clock::now();
@@ -106,8 +107,14 @@ int main(int argc, char* argv[]) {
         DrawTexture(texture, 0, 0, WHITE);
 
         unsigned int prog = provider.progress();
+        auto eta = std::chrono::duration_cast<std::chrono::seconds>(provider.eta());
 
-        DrawText((std::to_string(prog) + "%").c_str(), 20, 20, 24, BLACK);
+        auto eta_mm = std::chrono::duration_cast<std::chrono::minutes>(eta);
+        auto eta_ss = eta % 60;
+
+        std::ostringstream oss;
+        oss << prog << '%' << " - ETA: " << eta_mm.count() << "m " << eta_ss.count() << "s";
+        DrawText(oss.str().c_str(), 20, 20, 24, BLACK);
     EndDrawing();
   }
 

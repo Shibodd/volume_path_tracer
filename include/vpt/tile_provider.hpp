@@ -59,13 +59,26 @@ struct TileProvider {
   void stop_at_next_wave();
   void stop_now();
 
+  void reset_eta() {
+    m_start_t = std::chrono::steady_clock::now();
+  }
+
+  std::chrono::duration<float> eta() const {
+    float progress = progress_ratio();
+    float avg_progress_rate = progress / std::chrono::duration<float>(std::chrono::steady_clock::now() - m_start_t).count();
+    return std::chrono::duration<float>((1 - progress) / avg_progress_rate);
+  }
+
   unsigned int progress() const {
-    size_t max_jid = m_wave_start_monitor.requested_waves * m_tile_wave.size();
-    float ratio = static_cast<float>(m_job_idx) / static_cast<float>(max_jid);
-    return static_cast<unsigned int>(ratio * 100.0f);
+    return static_cast<unsigned int>(progress_ratio() * 100.0f);
   }
 
 private:
+  float progress_ratio() const {
+    size_t max_jid = m_wave_start_monitor.requested_waves * m_tile_wave.size();
+    return static_cast<float>(m_job_idx) / static_cast<float>(max_jid);
+  }
+
   image_rect_t compute_tile_rect(tile_index_t tile_idx) const;
   bool wave_should_be_processed(wave_index_t idx);
 
@@ -79,6 +92,8 @@ private:
         max_wave_idx(0) 
     {}
   } m_wave_start_monitor;
+
+  std::chrono::steady_clock::time_point m_start_t;
 
   bool m_force_stop;
 
