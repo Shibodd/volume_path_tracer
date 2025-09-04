@@ -129,7 +129,7 @@ int main(int argc, char* argv[]) {
   }
   
   film_to_image(film, img);
-  img.save(cfg.output_image.path.c_str());
+  img.save((config_path.parent_path() / cfg.output_image.path).c_str());
 
   return 0;
 }
