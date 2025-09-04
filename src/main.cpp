@@ -52,11 +52,33 @@ int main(int argc, char* argv[]) {
 
   vpt::Camera camera(cfg.camera_parameters, cfg.output_image.size);
 
+  std::mutex completion_mtx;
+  unsigned int completion_count = 0;
+  std::chrono::milliseconds completion_max_elapsed(0);
+
   for (unsigned int i = 0; i < cfg.num_workers; ++i) {
     threads.emplace_back([&]() {
+      auto start = std::chrono::high_resolution_clock::now();
+
       vpt::RandomNumberGenerator rng(10);
       vpt::run(cfg.worker_parameters, vol, camera, provider, film, rng);
+
+      auto end = std::chrono::high_resolution_clock::now();
+
+      auto elapsed = std::chrono::duration_cast<decltype(completion_max_elapsed)>(end - start);
+
+      {
+        std::lock_guard lock(completion_mtx);
+        ++completion_count;
+        completion_max_elapsed = std::max(elapsed, completion_max_elapsed);
+      }
+
       vptINFO(std::this_thread::get_id() << " IS DONE!");
+
+      if (completion_count == cfg.num_workers) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(300)); // poor man's synchronization :)
+        vptINFO("Rendering complete in " << completion_max_elapsed.count() << " ms");
+      }
     });
   }
 
@@ -72,7 +94,7 @@ int main(int argc, char* argv[]) {
 
   Texture2D texture = LoadTextureFromImage(image);
 
-  while (!WindowShouldClose())    // Detect window close button or ESC key
+  while (!WindowShouldClose())
   { 
     BeginDrawing();
         ClearBackground(PURPLE);
