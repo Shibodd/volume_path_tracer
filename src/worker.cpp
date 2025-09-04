@@ -107,10 +107,14 @@ void run(const WorkerParameters& params, const Volume& vol, const Camera& camera
           while (auto props = sampler.next()) {
             logger.sampled_point(*props);
 
-            float p_a = props->density * vol.params().sigma_a / props->sigma_maj;
-            float p_s = props->density * vol.params().sigma_s / props->sigma_maj;
-            
+            float p_a = (vol.params().sigma_a * props->density) / props->sigma_maj;
+            float p_s = (vol.params().sigma_a * props->density) / props->sigma_maj;
             float p_n = std::max<float>(1.0f - p_a - p_s, 0.0f);
+
+            if (props->temperature > 0) {
+              float temp_K = props->temperature * vol.params().temperature_scale + vol.params().temperature_offset;
+              L += p_a * vol.params().le_scale * blackbody_radiation_xyz(temp_K);
+            }
 
             ScatterEvent event = sample_discrete<ScatterEvent>({
               { ScatterEvent::Null, p_n },
@@ -136,10 +140,6 @@ void run(const WorkerParameters& params, const Volume& vol, const Camera& camera
               scattered = true;
               break;
             } else if (event == ScatterEvent::Absorption) {
-              float temp_K = props->temperature * vol.params().temperature_scale + vol.params().temperature_offset;
-
-              L += vol.params().le_scale * blackbody_radiation_xyz(temp_K);
-              
               logger.absorbed();
               terminated = true;
               break;
