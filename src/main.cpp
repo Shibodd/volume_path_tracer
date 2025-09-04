@@ -31,10 +31,12 @@ int main(int argc, char* argv[]) {
 
   vpt::init_blackbody_radiation_xyz();
 
-  vpt::Configuration cfg = vpt::read_configuration(argv[1]);
+  std::filesystem::path config_path = std::filesystem::canonical(argv[1]);
+
+  vpt::Configuration cfg = vpt::read_configuration(config_path);
 
   // vpt::VolumeGrids grids = vpt::VolumeGrids::generate_donut();
-  vpt::VolumeGrids grids = vpt::VolumeGrids::read_from_file(cfg.volume_path);
+  vpt::VolumeGrids grids = vpt::VolumeGrids::read_from_file(config_path.parent_path() / cfg.volume_path);
   vpt::Volume vol(grids, cfg.volume_parameters);
 
   if (grids.has_temperature())
