@@ -1,0 +1,40 @@
+{
+  "output_size": [1920, 1080],
+  "worker_parameters": {
+    "single_pixel": {
+      "enabled": false,
+      "coord": [550, 450]
+    },
+    "infinite_light": {
+      "xyz": [ 4.382, 3.509, 17.603 ],
+      "multiplier": 0.14
+    },
+    "distant_light": {
+      "xyz": [ 0.95047, 1.0, 1.08883 ],
+      "inv_direction": [0.5826, 0.7660, 0.2717],
+      "multiplier": 50
+    },
+    "use_jitter": true,
+    "max_depth": 100
+  },
+  "volume_parameters": {
+    "sigma_s": 0.15,
+    "sigma_a": 0.0,
+    "henyey_greenstein_g": 0.4,
+    "le_scale": 0.0,
+    "temperature_offset": 300.0,
+    "temperature_scale": 40.0
+  },
+  "seed": 10,
+  "tile_size": [8, 8],
+  "num_waves": 128,
+  "num_workers": 12,
+  "volume_path": "../volumes/wdas_cloud.nvdb",
+  "camera_parameters": {
+    "position": [ 648.064, -82.473, -63.856 ],
+    "look": [ 6.021, 100.043, -43.679 ],
+    "up": [ 0.273, 0.962, -0.009 ],
+    "vfov_deg": 35,
+    "imaging_ratio": 1e-1
+  }
+}
