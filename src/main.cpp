@@ -24,14 +24,15 @@ void film_to_image(const vpt::Image<float, 4>& film, vpt::Image<unsigned char, 3
 }
 
 int main(int argc, char* argv[]) {
-  if (argc != 2) {
-    vptFATAL("Usage: " << argv[0] << " config_path");
+  if (argc != 3) {
+    vptFATAL("Usage: " << argv[0] << " config_path output_path");
     return 1;
   }
 
   vpt::init_blackbody_radiation_xyz();
 
   std::filesystem::path config_path = std::filesystem::canonical(argv[1]);
+  std::filesystem::path output_path(argv[2]);
 
   vpt::Configuration cfg = vpt::read_configuration(config_path);
 
@@ -42,17 +43,17 @@ int main(int argc, char* argv[]) {
   if (grids.has_temperature())
     std::cout << "TempMin: " << grids.temperature().tree().root().minimum() << ", TempMax: " << grids.temperature().tree().root().maximum() << std::endl;
 
-  vpt::TileProvider provider(cfg.output_image.size, cfg.num_waves, cfg.tile_size);
+  vpt::TileProvider provider(cfg.output_size, cfg.num_waves, cfg.tile_size);
 
   std::vector<std::jthread> threads;
 
-  vpt::Image<float, 4> film(cfg.output_image.size);
+  vpt::Image<float, 4> film(cfg.output_size);
   film.data().fill(decltype(film)::value_t::Zero());
 
-  vpt::Image<unsigned char, 3> img(cfg.output_image.size);
+  vpt::Image<unsigned char, 3> img(cfg.output_size);
   img.data().fill(decltype(img)::value_t::Zero());
 
-  vpt::Camera camera(cfg.camera_parameters, cfg.output_image.size);
+  vpt::Camera camera(cfg.camera_parameters, cfg.output_size);
 
   std::mutex completion_mtx;
   unsigned int completion_count = 0;
@@ -85,14 +86,14 @@ int main(int argc, char* argv[]) {
     });
   }
 
-  InitWindow(cfg.output_image.size.x(), cfg.output_image.size.y(), ("vpt - " + cfg.volume_path.filename().string()).c_str());
+  InitWindow(cfg.output_size.x(), cfg.output_size.y(), ("vpt - " + cfg.volume_path.filename().string()).c_str());
   SetTargetFPS(5);
 
   Image image;
   image.data = img.data().data();
   image.format = PIXELFORMAT_UNCOMPRESSED_R8G8B8;
-  image.width = cfg.output_image.size.x();
-  image.height = cfg.output_image.size.y();
+  image.width = cfg.output_size.x();
+  image.height = cfg.output_size.y();
   image.mipmaps = 1;
 
   Texture2D texture = LoadTextureFromImage(image);
@@ -129,7 +130,7 @@ int main(int argc, char* argv[]) {
   }
   
   film_to_image(film, img);
-  img.save(cfg.output_image.path.c_str());
+  img.save(output_path.c_str());
 
   return 0;
 }

@@ -8,8 +8,7 @@
 namespace vpt {
 
 struct OutputImage {
-  image_size_t size;
-  std::filesystem::path path;
+  
 };
 
 struct CameraParameters {
@@ -54,7 +53,7 @@ struct VolumeParameters {
 };
 
 struct Configuration {
-  OutputImage output_image;
+  image_size_t output_size;
   image_size_t tile_size;
   unsigned int num_waves;
   unsigned int num_workers;
