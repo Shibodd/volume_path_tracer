@@ -117,7 +117,17 @@ int main(int argc, char* argv[]) {
 
         std::ostringstream oss;
         oss << prog << '%' << " - ETA: " << eta_mm.count() << "m " << eta_ss.count() << "s";
-        DrawText(oss.str().c_str(), 20, 20, 24, BLACK);
+
+        auto pixel = img.data()(20, 20);
+        float luminance = (0.299 * pixel.x() + 0.587 * pixel.y() + 0.114 * pixel.z())/255;
+        
+        Color color;
+        if (luminance > 0.5f)
+          color = BLACK;
+        else
+          color = WHITE;
+
+        DrawText(oss.str().c_str(), 20, 20, 24, color);
     EndDrawing();
   }
 
