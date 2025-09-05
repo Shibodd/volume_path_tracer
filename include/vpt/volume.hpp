@@ -46,7 +46,7 @@ private:
   RayT m_ray;
   
   const GridT::AccessorType& m_acc;
-  nanovdb::math::HDDA<RayT> m_hdda;
+  nanovdb::math::DDA<RayT, nanovdb::Coord, 8> m_dda;
 };
 
 struct Volume {
