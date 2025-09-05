@@ -1,0 +1,41 @@
+{
+    "output_size": [700, 1000],
+    "worker_parameters": {
+      "single_pixel": {
+        "enabled": false,
+        "coord": [239, 879]
+      },
+      "infinite_light": {
+        "xyz": [ 0.25, 0.25, 0.5 ],
+        "multiplier": 10
+      },
+      "distant_light": {
+        "xyz": [ 0.95047, 1.0, 1.08883 ],
+        "inv_direction": [0.5, 1, 0],
+        "multiplier": 20
+      },
+      "use_jitter": true,
+      "max_depth": 1000000
+    },
+    "volume_parameters": {
+      "sigma_s": 0.9,
+      "sigma_a": 2,
+      "henyey_greenstein_g": 0.7,
+      "le_scale": 4e-8,
+      "temperature_offset": 300.0,
+      "temperature_scale": 43.0
+    },
+    "seed": 500,
+    "tile_size": [8, 8],
+    "num_waves": 1024,
+    "num_workers": 12,
+    "volume_path": "../volumes/fire.nvdb",
+    "camera_parameters": {
+      "position": [ 120, 30, 0 ],
+      "look": [ 0, 30, 0 ],
+      "up": [ 0, 1, 0 ],
+      "vfov_deg": 37,
+      "imaging_ratio": 1e-1
+    }
+  }
+  
