@@ -54,6 +54,9 @@ Eigen::Vector3f sample_Ld(const WorkerParameters& params, const Volume& vol, Ran
   Eigen::Vector3f wi = params.distant_light.inv_direction.normalized();
   Eigen::Vector3f Li = params.distant_light.xyz * params.distant_light.multiplier;
 
+  if (Li == Eigen::Vector3f::Zero())
+    return Li;
+
   float sigma_t = vol.params().sigma_a + vol.params().sigma_s;
 
   // Trace the shadow ray to estimate transmittance
@@ -66,6 +69,15 @@ Eigen::Vector3f sample_Ld(const WorkerParameters& params, const Volume& vol, Ran
       float sigma_n = std::max(0.0f, props->sigma_maj - sigma_t * props->density);
 
       T_ray *= sigma_n / props->sigma_maj;
+
+      if (T_ray <= 0.05f) {
+        float q = 0.75f;
+        if (rng.uniform<float>() < q) {
+          T_ray = 0.0f;
+        } else {
+          T_ray /= 1 - q;
+        }
+      }
 
       if (T_ray <= 0.0f) {
         return Eigen::Vector3f::Zero();
