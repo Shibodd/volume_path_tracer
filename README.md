@@ -11,3 +11,5 @@ To run, `build/vpt scenes/YOURSCENE.json YOUROUTPUTFILE.png`. Note that quitting
 To visualize a single ray for debugging, `build/visualize_ray scenes/YOURSCENE.json`
 
 All customizable parameters are in the scene json file.
+
+The provided volumes folder is to be put in the repository root.
