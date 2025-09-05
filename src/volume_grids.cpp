@@ -1,8 +1,8 @@
 #include <utility>
 #include <optional>
 
-// ffs... build your shit with warnings enabled pls
 #pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-private-field"
 #pragma GCC diagnostic ignored "-Wunused-but-set-variable"
 #pragma GCC diagnostic ignored "-Wdouble-promotion"
 #pragma GCC diagnostic ignored "-Wdeprecated-copy"

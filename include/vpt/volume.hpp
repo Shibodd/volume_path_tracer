@@ -1,9 +1,11 @@
 #ifndef VPT_VOLUME_HPP
 #define VPT_VOLUME_HPP
 
+#include <vpt/nanovdb_utils.hpp>
 #include <optional>
 
 #pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-private-field"
 #pragma GCC diagnostic ignored "-Wunused-but-set-variable"
 #pragma GCC diagnostic ignored "-Wdouble-promotion"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
@@ -38,15 +40,39 @@ struct RayMajorantIterator {
   const RayT& ray() const { return m_ray; }
 
   float idx_to_world_scale() const { return m_scale; }
+  
+  struct DDAStep {
+    int dim;
+    float majorant;
+    float t;
+    Eigen::Vector3i voxel;
+    Eigen::Vector3f hit;
+  };
+  
+  void record_steps(std::vector<DDAStep>* dst) { m_step_record_dst = dst; }
 
 private:
-  float get_current_majorant();
+  void record_step() {
+    if (m_step_record_dst != nullptr) {
+      m_step_record_dst->push_back({
+        .dim = m_dda.dim(),
+        .majorant = m_majorant,
+        .t = m_dda.time(),
+        .voxel = nanovdb_to_eigen_i(m_dda.voxel()),
+        .hit = nanovdb_to_eigen_f(m_ray(m_dda.time()))
+      });
+    }
+  }
+
+  void update_current_majorant();
 
   float m_scale;
   RayT m_ray;
-  
+  float m_majorant;
+
   const GridT::AccessorType& m_acc;
-  nanovdb::math::DDA<RayT, nanovdb::Coord, 8> m_dda;
+  nanovdb::math::HDDA<RayT> m_dda;
+  std::vector<DDAStep>* m_step_record_dst;
 };
 
 struct Volume {

@@ -42,3 +42,23 @@ target_include_directories (${PROJECT_NAME} PRIVATE include)
 target_compile_options (${PROJECT_NAME} PRIVATE -g -Wall -Wpedantic -Werror -Wextra -Wdouble-promotion -Wfloat-conversion)
 target_link_libraries (${PROJECT_NAME} nanovdb glaze::glaze Eigen3::Eigen raylib spng pcg-cpp)
 target_compile_features (${PROJECT_NAME} PRIVATE cxx_std_23)
+
+
+add_executable(ray_visualizer
+  src/ray_visualizer.cpp
+  src/volume_grids.cpp
+  src/volume.cpp
+  src/majorant_transmittance_sampler.cpp
+  src/configuration.cpp
+  src/image_io.cpp
+  src/tile_provider.cpp
+  src/camera.cpp
+  src/ray.cpp
+  src/worker.cpp
+  src/spectral.cpp
+  src/precompute_blackbody.cpp
+)
+target_include_directories (ray_visualizer PRIVATE include)
+target_compile_options (ray_visualizer PRIVATE -g)
+target_link_libraries (ray_visualizer nanovdb glaze::glaze Eigen3::Eigen raylib spng pcg-cpp)
+target_compile_features (ray_visualizer PRIVATE cxx_std_23)
