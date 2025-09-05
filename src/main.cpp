@@ -64,7 +64,7 @@ int main(int argc, char* argv[]) {
     threads.emplace_back([&]() {
       auto start = std::chrono::high_resolution_clock::now();
 
-      vpt::RandomNumberGenerator rng(10);
+      vpt::RandomNumberGenerator rng(cfg.seed);
       vpt::run(cfg.worker_parameters, vol, camera, provider, film, rng);
 
       auto end = std::chrono::high_resolution_clock::now();

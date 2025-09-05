@@ -53,6 +53,7 @@ struct VolumeParameters {
 };
 
 struct Configuration {
+  unsigned int seed;
   image_size_t output_size;
   image_size_t tile_size;
   unsigned int num_waves;
